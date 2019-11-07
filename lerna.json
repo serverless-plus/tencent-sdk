@@ -1,0 +1,11 @@
+{
+  "packages": ["packages/*"],
+  "version": "independent",
+  "useWorkspaces": true,
+  "command": {
+    "publish": {
+      "allowBranch": ["master", "dev"],
+      "message": "chore(release): publish %v"
+    }
+  }
+}

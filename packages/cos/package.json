@@ -1,0 +1,15 @@
+{
+  "name": "@tss/cos",
+  "version": "0.0.0",
+  "description": "Tencent cloud cos sdk",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tencent-cloud",
+    "cos"
+  ],
+  "author": "yugasun",
+  "license": "MIT"
+}

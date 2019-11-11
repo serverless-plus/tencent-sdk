@@ -20,12 +20,13 @@ interface CapiRequestProps {
 }
 
 class HttpError extends Error {
+  message: string = '';
   code: number = 0;
 
   constructor(code: number, message: string) {
     super(message);
     this.code = code;
-    this.message = message || '';
+    this.message = message;
   }
 }
 
@@ -39,9 +40,13 @@ const CheckExistsFromError = (err: Error) => {
   return true;
 };
 
+interface ApiObject {
+  [propName: string]: Function;
+}
+
 export class CapiRequest {
   // support action list
-  actionList: string[] = [
+  private actionList: string[] = [
     'CreateService',
     'DeleteService',
     'DescribeService',
@@ -68,7 +73,7 @@ export class CapiRequest {
     'UnBindEnvironment',
   ];
   // action need check exist error
-  needCheckAction: string[] = [
+  private needCheckAction: string[] = [
     'UnBindSecretIds',
     'UnBindEnvironment',
     'DeleteUsagePlan',
@@ -76,7 +81,7 @@ export class CapiRequest {
   ];
 
   apiRequest: CapiInstance;
-  apis: any;
+  apis: ApiObject = {};
 
   constructor({ SecretId, SecretKey }: CapiRequestProps) {
     this.apiRequest = new Capi({
@@ -88,7 +93,7 @@ export class CapiRequest {
     this.apiFactory();
   }
 
-  request(action: string, options: any, needCheck: boolean = false) {
+  request(action: string, options: object = {}, needCheck: boolean = false) {
     return new Promise((resolve, reject) => {
       this.apiRequest.request(
         {
@@ -117,7 +122,7 @@ export class CapiRequest {
   apiFactory() {
     this.apis = {};
     this.actionList.forEach((item: string) => {
-      this.apis[item] = (options: any) => {
+      this.apis[item] = async (options: object) => {
         return this.request(
           item,
           options,
@@ -126,13 +131,9 @@ export class CapiRequest {
       };
     });
   }
-
-  createService(options: any) {
-    return this.request('CreateService', options);
-  }
 }
 
-export const Validate = (config: any) => {
+export const Validate = (config: object = {}) => {
   const usagePlanScheme = {
     usagePlanId: Joi.string().optional(),
     usagePlanDesc: Joi.string()

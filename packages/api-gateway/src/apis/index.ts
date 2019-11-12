@@ -1,18 +1,5 @@
 import Joi from 'joi';
-import Capi from 'qcloudapi-sdk';
-
-interface CapiOptions {
-  Action: string;
-  RequestClient: string;
-  [propName: string]: any;
-}
-
-interface CapiInstance {
-  request: (
-    options: CapiOptions,
-    cb: (err: Error, data: any) => void,
-  ) => Promise<any>;
-}
+import { Capi, CapiInstance } from './capi';
 
 interface CapiRequestProps {
   SecretId: string;
@@ -93,36 +80,37 @@ export class CapiRequest {
     this.apiFactory();
   }
 
-  request(action: string, options: object = {}, needCheck: boolean = false) {
-    return new Promise((resolve, reject) => {
-      this.apiRequest.request(
-        {
-          Action: action,
-          RequestClient: 'ServerlessComponent',
-          ...options,
-        },
-        function(err, data) {
-          if (err) {
-            return reject(err);
-          } else if (data.code !== 0) {
-            if (needCheck) {
-              if (CheckExistsFromError(data)) {
-                return reject(new HttpError(data.code, data.message));
-              }
-            } else {
-              return reject(new HttpError(data.code, data.message));
-            }
+  async request(
+    action: string,
+    options: object = {},
+    needCheck: boolean = false,
+  ) {
+    try {
+      const data = await this.apiRequest.request({
+        Action: action,
+        RequestClient: 'ServerlessComponent',
+        ...options,
+      });
+
+      if (data.code !== 0) {
+        if (needCheck) {
+          if (CheckExistsFromError(data)) {
+            throw new HttpError(data.code, data.message);
           }
-          resolve(data);
-        },
-      );
-    });
+        } else {
+          throw new HttpError(data.code, data.message);
+        }
+      }
+      return data;
+    } catch (err) {
+      throw err;
+    }
   }
 
   apiFactory() {
     this.apis = {};
     this.actionList.forEach((item: string) => {
-      this.apis[item] = async (options: object) => {
+      this.apis[item] = (options: object) => {
         return this.request(
           item,
           options,

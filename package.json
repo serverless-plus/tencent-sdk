@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "build:ts": "tsc -b tsconfig.json",
+    "build": "tsc -b tsconfig.json",
     "clean": "lerna clean --yes && lerna run clean && rimraf includes",
     "release": "yarn bootstrap && yarn build:ts && lerna publish --exact",
     "format": "prettier --write '**/*.{ts,tsx}' --config .prettierrc"

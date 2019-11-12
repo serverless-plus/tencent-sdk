@@ -1,1 +1,1 @@
-declare module 'qcloudapi-sdk';
+declare module 'dot-qs';

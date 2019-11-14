@@ -1,10 +1,7 @@
 import Joi from 'joi';
 import { Capi, CapiInstance } from './capi';
 
-interface CapiRequestProps {
-  SecretId: string;
-  SecretKey: string;
-}
+import { CapiOptions, RequestData } from './capi';
 
 class HttpError extends Error {
   message: string = '';
@@ -28,7 +25,7 @@ const CheckExistsFromError = (err: Error) => {
 };
 
 interface ApiObject {
-  [propName: string]: Function;
+  [propName: string]: (data: RequestData, options: CapiOptions) => Promise<any>;
 }
 
 export class CapiRequest {
@@ -70,38 +67,44 @@ export class CapiRequest {
   apiRequest: CapiInstance;
   apis: ApiObject = {};
 
-  constructor({ SecretId, SecretKey }: CapiRequestProps) {
+  constructor({ SecretId, SecretKey, Region, SignatureMethod }: CapiOptions) {
     this.apiRequest = new Capi({
+      Region,
       SecretId,
       SecretKey,
-      serviceType: 'apigateway',
+      SignatureMethod,
+      ServiceType: 'apigateway',
     }) as CapiInstance;
 
     this.apiFactory();
   }
 
   async request(
-    action: string,
-    options: object = {},
+    Action: string,
+    data: RequestData,
+    options: CapiOptions,
     needCheck: boolean = false,
   ) {
     try {
-      const data = await this.apiRequest.request({
-        Action: action,
-        RequestClient: 'ServerlessComponent',
-        ...options,
-      });
+      const res = await this.apiRequest.request(
+        {
+          Action,
+          RequestClient: 'ServerlessComponent',
+          ...data,
+        },
+        options,
+      );
 
-      if (data.code !== 0) {
+      if (res.code !== 0) {
         if (needCheck) {
-          if (CheckExistsFromError(data)) {
-            throw new HttpError(data.code, data.message);
+          if (CheckExistsFromError(res)) {
+            throw new HttpError(res.code, res.message);
           }
         } else {
-          throw new HttpError(data.code, data.message);
+          throw new HttpError(res.code, res.message);
         }
       }
-      return data;
+      return res;
     } catch (err) {
       throw err;
     }
@@ -110,9 +113,10 @@ export class CapiRequest {
   apiFactory() {
     this.apis = {};
     this.actionList.forEach((item: string) => {
-      this.apis[item] = (options: object) => {
+      this.apis[item] = (data: RequestData, options: CapiOptions) => {
         return this.request(
           item,
+          data,
           options,
           this.needCheckAction.indexOf(item) !== -1,
         );

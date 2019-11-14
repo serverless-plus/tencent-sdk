@@ -3,22 +3,24 @@ import assign from 'object-assign';
 import qs from 'querystring';
 import dotQs from 'dot-qs';
 import crypto from 'crypto';
+import chalk from 'chalk';
 
-interface CapiOptions {
+export interface CapiOptions {
+  debug?: boolean;
   host?: string;
   baseHost?: string;
   path?: string;
   method?: string;
   protocol?: string;
-  serviceType?: string;
+  ServiceType?: string;
+  maxKeys?: number;
   Region?: string;
   SecretId?: string;
   SecretKey?: string;
-  signatureMethod?: string;
-  maxKeys?: number;
+  SignatureMethod?: string;
 }
 
-interface RequestData {
+export interface RequestData {
   Action: string;
   RequestClient: string;
   Version?: string;
@@ -26,7 +28,7 @@ interface RequestData {
   [propName: string]: any;
 }
 
-interface RequestParam {
+interface RequestParam extends CapiOptions, RequestData {
   [propName: string]: any;
 }
 
@@ -41,7 +43,7 @@ export class Capi implements CapiInstance {
     method: 'POST',
     protocol: 'https',
     baseHost: 'api.qcloud.com',
-    signatureMethod: 'sha1', // sign algorithm, default is sha1
+    SignatureMethod: 'sha1', // sign algorithm, default is sha1
   };
 
   constructor(options: CapiOptions) {
@@ -49,12 +51,10 @@ export class Capi implements CapiInstance {
   }
 
   private getHost(opts: CapiOptions) {
-    let host = opts.host;
+    const options = assign({}, this.options, opts);
+    let host = options.host;
     if (!host) {
-      host =
-        (opts.serviceType || this.options.serviceType) +
-        '.' +
-        (opts.baseHost || this.options.baseHost);
+      host = `${options.ServiceType}.${options.baseHost}`;
     }
     return host;
   }
@@ -67,16 +67,14 @@ export class Capi implements CapiInstance {
     return (opts.protocol || this.options.protocol) + '://' + host + path;
   }
 
-  generateQueryString(data: RequestData, opts: CapiOptions) {
-    opts = opts || this.options;
-
-    let options = this.options;
+  generateQueryString(data: RequestData, opts: CapiOptions = {}) {
+    const options = assign(this.options, opts);
 
     //附上公共参数
     let param: RequestParam = assign(
       {
-        Region: this.options.Region,
-        SecretId: opts.SecretId || this.options.SecretId,
+        Region: options.Region,
+        SecretId: options.SecretId,
         Timestamp: Math.round(Date.now() / 1000),
         Nonce: Math.round(Math.random() * 65535),
         RequestClient: 'SDK_NODEJS_v0.0.1', //非必须, sdk 标记
@@ -84,34 +82,27 @@ export class Capi implements CapiInstance {
       data,
     );
 
-    // 初始化配置和传入的参数冲突时，以传入的参数为准
-    let isSha256 =
-      options.signatureMethod === 'sha256' || opts.signatureMethod === 'sha256';
-    if (isSha256 && !data.SignatureMethod) param.SignatureMethod = 'HmacSHA256';
+    if (options.SignatureMethod === 'sha256') {
+      param.SignatureMethod = 'HmacSHA256';
+    }
 
-    let isAPIv3 = !!data.Version;
+    const isAPIv3 = !!data.Version;
 
     param = dotQs.flatten(param);
 
-    let keys = Object.keys(param);
+    const keys = Object.keys(param).sort();
+    const host = this.getHost(opts);
+    const method = (opts.method || options.method || '').toUpperCase();
+    const path = options.path;
+
     let qstr = '';
-
-    let host = this.getHost(opts);
-    let method = (opts.method || options.method || '').toUpperCase();
-    let path = opts.path === undefined ? options.path : opts.path;
-
-    keys.sort();
-
-    //拼接 querystring, 注意这里拼接的参数要和下面 `qs.stringify` 里的参数一致
-    //暂不支持纯数字键值及空字符串键值
     keys.forEach(function(key) {
-      let val = param[key];
-      // 排除上传文件的参数
-      // modify 2018-10-25 云APIv3调用不排除‘@’字符开头的参数
-      if (!isAPIv3 && method === 'POST' && val && val[0] === '@') {
+      if (key === '') {
         return;
       }
-      if (key === '') {
+      key = key.indexOf('_') ? key.replace(/_/g, '.') : key;
+      let val = param[key];
+      if (!isAPIv3 && method === 'POST' && val && val[0] === '@') {
         return;
       }
       if (
@@ -121,32 +112,16 @@ export class Capi implements CapiInstance {
       ) {
         val = '';
       }
-      //把参数中的 "_" (除开开头)替换成 "."
-      qstr +=
-        '&' + (key.indexOf('_') ? key.replace(/_/g, '.') : key) + '=' + val;
+      qstr += `&${key}=${val}`;
     });
 
     qstr = qstr.slice(1);
 
-    let hashResult; // 16进制负载hash值
-    if (
-      opts.signatureMethod === 'sha256' &&
-      data.SignatureMethod === 'TC2-HmacSHA256'
-    ) {
-      hashResult = crypto
-        .createHash(opts.signatureMethod)
-        .update(qstr)
-        .digest('hex');
-      qstr = '\n' + hashResult;
-    }
-
-    const signStr = this.sign(
-      method + host + path + '?' + qstr,
-      opts.SecretKey || options.SecretKey || '',
-      opts.signatureMethod || options.signatureMethod,
+    param.Signature = this.sign(
+      `${method}${host}${path}?${qstr}`,
+      options.SecretKey || '',
+      options.SignatureMethod,
     );
-
-    param.Signature = signStr;
 
     return qs.stringify(param);
   }
@@ -172,10 +147,18 @@ export class Capi implements CapiInstance {
 
     if (method === 'POST') {
       reqOption.form = qs.parse(dataStr, '', '', {
-        maxKeys: maxKeys,
+        maxKeys,
       });
     } else {
       reqOption.url += '?' + dataStr;
+    }
+
+    // debug request option
+    if (options.debug) {
+      console.log(
+        chalk.black.bgYellow('[DEBUG]') +
+          ` Request Option: ${JSON.stringify(reqOption)}`,
+      );
     }
 
     return rp(reqOption);

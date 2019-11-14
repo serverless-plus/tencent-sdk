@@ -13,6 +13,7 @@
   "author": "yugasun",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^3.0.0",
     "dot-qs": "^0.2.0",
     "joi": "^14.3.1",
     "object-assign": "^4.1.1",
@@ -21,6 +22,7 @@
     "request-promise-native": "^1.0.8"
   },
   "devDependencies": {
+    "@types/chalk": "^2.2.0",
     "@types/joi": "^14.3.4",
     "@types/object-assign": "^4.0.30",
     "@types/request": "^2.48.3",

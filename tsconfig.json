@@ -1,8 +1,9 @@
 {
   "files": [],
   "references": [
-    { "path": "packages/api-gateway" },
+    { "path": "packages/api-gw" },
     { "path": "packages/cos" },
-    { "path": "packages/function" }
+    { "path": "packages/function" },
+    { "path": "packages/capi" }
   ]
 }

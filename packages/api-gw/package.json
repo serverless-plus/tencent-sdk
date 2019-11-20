@@ -1,0 +1,22 @@
+{
+  "name": "tss-api-gw",
+  "version": "0.0.0",
+  "description": "Tencent cloud api gateway sdk",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tencent-clound",
+    "api-gateway"
+  ],
+  "author": "yugasun",
+  "license": "MIT",
+  "dependencies": {
+    "tss-capi": "*",
+    "joi": "^14.3.1"
+  },
+  "devDependencies": {
+    "@types/joi": "^14.3.4"
+  }
+}

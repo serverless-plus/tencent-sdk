@@ -1,7 +1,5 @@
 import Joi from 'joi';
-import { Capi, CapiInstance } from './capi';
-
-import { CapiOptions, RequestData } from './capi';
+import { Capi, CapiInstance, CapiOptions, RequestData } from 'tss-capi';
 
 class HttpError extends Error {
   message: string = '';

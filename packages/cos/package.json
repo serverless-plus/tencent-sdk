@@ -1,5 +1,5 @@
 {
-  "name": "@tss/cos",
+  "name": "tss-cos",
   "version": "0.0.0",
   "description": "Tencent cloud cos sdk",
   "main": "dist/index.js",

@@ -1,5 +1,5 @@
 {
-  "name": "@tss/function",
+  "name": "tss-function",
   "version": "0.0.0",
   "description": "Tencent cloud serverlerss function sdk",
   "main": "dist/index.js",

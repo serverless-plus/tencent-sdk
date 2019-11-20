@@ -2,7 +2,7 @@
   "name": "tencent-serverless-sdk",
   "private": true,
   "scripts": {
-    "bootstrap": "lerna bootstrap",
+    "bootstrap": "lerna exec npm install && lerna link",
     "build": "tsc -b tsconfig.json",
     "clean": "lerna clean --yes && lerna run clean && rimraf includes",
     "release": "yarn bootstrap && yarn build:ts && lerna publish --exact",

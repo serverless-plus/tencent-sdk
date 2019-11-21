@@ -90,7 +90,12 @@ export class CapiRequest {
           RequestClient: 'ServerlessComponent',
           ...data,
         },
-        options,
+        {
+          ...options,
+          ...{
+            path: '/v2/index.php',
+          },
+        },
       );
 
       if (res.code !== 0) {

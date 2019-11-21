@@ -4,26 +4,24 @@ import qs from 'querystring';
 import { logger, tencentSign, tencentSignV1 } from './utils';
 
 export interface CapiOptions {
-  debug?: boolean;
-  host?: string;
-  baseHost?: string;
-  path?: string;
-  method?: string;
-  protocol?: string;
-  ServiceType: string;
-  Region: string;
-  SecretId: string;
-  SecretKey: string;
-  maxKeys?: number;
-  SignatureMethod?: string;
+  debug?: boolean; // whether enable log debug info
+  host?: string; // request host
+  baseHost?: string; // request domain, default: api.qcloud.com
+  path?: string; // request path, default: /
+  method?: string; // request method, default: POST
+  protocol?: string; // request protocol, default: https
+  ServiceType: string; // tencent service type, eg: apigateway
+  Region: string; // request region, default: ap-guangzhou
+  SecretId: string; // tencent account secret id
+  SecretKey: string; // tencent account secret key
+  SignatureMethod?: string; // request signature method, default: sha1
 }
 
 export interface RequestData {
-  Action: string;
-  RequestClient?: string;
-  Version: string;
-  SignatureMethod?: string;
-  [propName: string]: any;
+  Action: string; // request action
+  RequestClient?: string; // optional, just to specify your service
+  Version: string; // api version, default: 2018-03-21
+  [propName: string]: any; // left api parameters
 }
 
 export interface RequestOptions {
@@ -52,7 +50,7 @@ export class Capi implements CapiInstance {
     method: 'POST',
     protocol: 'https',
     baseHost: 'api.qcloud.com',
-    ServiceType: 'api',
+    ServiceType: '',
     SecretId: '',
     SecretKey: '',
     Region: 'ap-guangzhou',
@@ -105,12 +103,9 @@ export class Capi implements CapiInstance {
         json: true,
         strictSSL: false,
       };
-      const maxKeys = options.maxKeys || 1000;
 
       if (method === 'POST') {
-        reqOption.form = qs.parse(signPath, '', '', {
-          maxKeys,
-        });
+        reqOption.form = qs.parse(signPath, '', '');
       } else {
         reqOption.url += '?' + signPath;
       }

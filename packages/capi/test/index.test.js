@@ -3,8 +3,8 @@ const { Capi } = require('../dist/index');
 async function main() {
   const client = new Capi({
     Region: 'ap-guangzhou',
-    SecretId: 'Please input your SecretId',
-    SecretKey: 'Please input your SecretKey',
+    SecretId: 'AKIDERQREz5KfomYBj8SUWO4zP4qSqcYAn6E',
+    SecretKey: '62rUkofMtSp7AlCPZ4LOwHMFwOcbLsBR',
     ServiceType: 'tmt',
   });
   try {

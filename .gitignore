@@ -8,4 +8,4 @@ tsconfig.tsbuildinfo
 .env
 coverage
 yarn.lock
-package-lock.json
+.rpt2_cache

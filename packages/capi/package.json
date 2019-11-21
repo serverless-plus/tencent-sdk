@@ -3,6 +3,12 @@
   "version": "0.2.3",
   "description": "Tencent cloud api sdk",
   "main": "dist/index.js",
+  "node": "dist/index.js",
+  "browser": "dist/index.umd.js",
+  "module": "dist/index.esm.js",
+  "jsnext:main": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,5 +32,16 @@
     "@types/object-assign": "^4.0.30",
     "@types/request": "^2.48.3",
     "@types/request-promise-native": "^1.0.17"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yugasun/tencent-serverless-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yugasun/tencent-serverless-sdk/issues"
+  },
+  "homepage": "https://github.com/yugasun/tencent-serverless-sdk#readme"
 }

@@ -26,13 +26,28 @@ export interface RequestData {
   [propName: string]: any;
 }
 
+export interface RequestOptions {
+  debug?: boolean;
+  host?: string;
+  baseHost?: string;
+  path?: string;
+  method?: string;
+  protocol?: string;
+  ServiceType?: string;
+  Region?: string;
+  SecretId?: string;
+  SecretKey?: string;
+  maxKeys?: number;
+  SignatureMethod?: string;
+}
+
 export interface CapiInstance {
-  request: (data: RequestData, opts?: CapiOptions) => Promise<any>;
+  request: (data: RequestData, opts?: RequestOptions) => Promise<any>;
 }
 
 export class Capi implements CapiInstance {
   options: CapiOptions;
-  defaultOptions: CapiOptions = {
+  defaultOptions: RequestOptions = {
     path: '/', // api request path
     method: 'POST',
     protocol: 'https',
@@ -50,7 +65,7 @@ export class Capi implements CapiInstance {
 
   request(
     data: RequestData,
-    opts: CapiOptions = this.defaultOptions,
+    opts: RequestOptions = this.defaultOptions,
     isV3 = false,
   ) {
     const options = assign(this.options, opts);

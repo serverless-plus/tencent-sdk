@@ -1,6 +1,6 @@
 {
   "name": "tss-capi",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Tencent cloud api sdk",
   "main": "dist/index.js",
   "node": "dist/index.js",

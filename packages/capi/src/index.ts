@@ -40,7 +40,11 @@ export interface RequestOptions {
 }
 
 export interface CapiInstance {
-  request: (data: RequestData, opts?: RequestOptions) => Promise<any>;
+  request: (
+    data: RequestData,
+    opts?: RequestOptions,
+    isV3?: boolean,
+  ) => Promise<any>;
 }
 
 export class Capi implements CapiInstance {

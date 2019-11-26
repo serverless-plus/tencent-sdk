@@ -23,10 +23,14 @@ const CheckExistsFromError = (err: Error) => {
 };
 
 interface ApiObject {
-  [propName: string]: (data: RequestData, options: CapiOptions) => Promise<any>;
+  [propName: string]: (
+    data: RequestData,
+    options: CapiOptions,
+    isV3?: boolean,
+  ) => Promise<any>;
 }
 
-export class CapiRequest {
+export class ApiGwRequest {
   // support action list
   private actionList: string[] = [
     'CreateService',
@@ -48,6 +52,7 @@ export class CapiRequest {
     'CreateApiKey',
     'DeleteApiKey',
     'DisableApiKey',
+    'EnableApiKey',
     'DescribeApiKeysStatus',
     'BindSecretIds',
     'UnBindSecretIds',
@@ -65,14 +70,13 @@ export class CapiRequest {
   apiRequest: CapiInstance;
   apis: ApiObject = {};
 
-  constructor({ SecretId, SecretKey, Region, SignatureMethod }: CapiOptions) {
+  constructor(options: CapiOptions) {
     this.apiRequest = new Capi({
-      Region,
-      SecretId,
-      SecretKey,
-      SignatureMethod,
-      ServiceType: 'apigateway',
-    }) as CapiInstance;
+      ...options,
+      ...{
+        ServiceType: 'apigateway',
+      },
+    });
 
     this.apiFactory();
   }
@@ -81,21 +85,23 @@ export class CapiRequest {
     Action: string,
     data: RequestData,
     options: CapiOptions,
+    isV3: boolean = false,
     needCheck: boolean = false,
   ) {
     try {
       const res = await this.apiRequest.request(
         {
+          RequestClient: 'tss-api-gw',
           Action,
-          RequestClient: 'ServerlessComponent',
           ...data,
         },
         {
-          ...options,
+          ...(options || {}),
           ...{
             path: '/v2/index.php',
           },
         },
+        isV3,
       );
 
       if (res.code !== 0) {
@@ -116,11 +122,16 @@ export class CapiRequest {
   apiFactory() {
     this.apis = {};
     this.actionList.forEach((item: string) => {
-      this.apis[item] = (data: RequestData, options: CapiOptions) => {
+      this.apis[item] = (
+        data: RequestData,
+        options: CapiOptions,
+        isV3: boolean = false,
+      ) => {
         return this.request(
           item,
           data,
           options,
+          isV3,
           this.needCheckAction.indexOf(item) !== -1,
         );
       };

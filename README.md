@@ -1,4 +1,4 @@
-# tencent-serverless-sdk
+# tencent-sdk
 
 Tencent Cloud Serverless SDK
 

@@ -1,5 +1,5 @@
 {
-  "name": "tss-capi",
+  "name": "@tencent-sdk/capi",
   "version": "0.2.5",
   "description": "Tencent cloud api sdk",
   "main": "dist/index.js",
@@ -9,6 +9,9 @@
   "jsnext:main": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "typings": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -38,10 +41,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yugasun/tencent-serverless-sdk.git"
+    "url": "git+https://github.com/yugasun/tencent-sdk.git"
   },
   "bugs": {
-    "url": "https://github.com/yugasun/tencent-serverless-sdk/issues"
+    "url": "https://github.com/yugasun/tencent-sdk/issues"
   },
-  "homepage": "https://github.com/yugasun/tencent-serverless-sdk#readme"
+  "homepage": "https://github.com/yugasun/tencent-sdk#readme"
 }

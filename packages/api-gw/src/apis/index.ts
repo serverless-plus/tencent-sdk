@@ -1,5 +1,10 @@
 import Joi from 'joi';
-import { Capi, CapiInstance, CapiOptions, RequestData } from 'tss-capi';
+import {
+  Capi,
+  CapiInstance,
+  CapiOptions,
+  RequestData,
+} from '@tencent-sdk/capi';
 
 class HttpError extends Error {
   message: string = '';

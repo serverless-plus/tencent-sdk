@@ -1,5 +1,5 @@
 {
-  "name": "tss-api-gw",
+  "name": "@tencent-sdk/api-gw",
   "version": "0.0.2",
   "description": "Tencent cloud api gateway sdk",
   "main": "dist/index.js",
@@ -9,6 +9,9 @@
   "jsnext:main": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "typings": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,7 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "joi": "^14.3.1",
-    "tss-capi": "0.2.5"
+    "@tencent-sdk/capi": "0.2.5"
   },
   "devDependencies": {
     "@types/joi": "^14.3.4"
@@ -30,10 +33,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yugasun/tencent-serverless-sdk.git"
+    "url": "git+https://github.com/yugasun/tencent-sdk.git"
   },
   "bugs": {
-    "url": "https://github.com/yugasun/tencent-serverless-sdk/issues"
+    "url": "https://github.com/yugasun/tencent-sdk/issues"
   },
-  "homepage": "https://github.com/yugasun/tencent-serverless-sdk#readme"
+  "homepage": "https://github.com/yugasun/tencent-sdk#readme"
 }

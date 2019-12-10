@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 import moment from 'moment';
 import chalk from 'chalk';
-import dotQs from 'dot-qs';
 import qs from 'querystring';
 import { CapiOptions } from './index';
 
@@ -72,6 +71,102 @@ export function sign(
 }
 
 /**
+ * is array
+ * @param obj object
+ */
+export function isArray(obj: any) {
+  return Object.prototype.toString.call(obj) == '[object Array]';
+}
+
+/**
+ * is object
+ * @param obj object
+ */
+export function isObject(obj: any) {
+  return obj === Object(obj);
+}
+
+/**
+ * iterate object or array
+ * @param obj object or array
+ * @param iterator iterator function
+ */
+export function _forEach(
+  obj: object | any[],
+  iterator: (value: any, index: number | string, array: any) => void,
+) {
+  if (isArray(obj)) {
+    let arr = obj as Array<any>;
+    if (arr.forEach) {
+      arr.forEach(iterator);
+      return;
+    }
+    for (let i = 0; i < arr.length; i += 1) {
+      iterator(arr[i], i, arr);
+    }
+  } else {
+    const oo = obj as { [propName: string]: any };
+    for (let key in oo) {
+      if (obj.hasOwnProperty(key)) {
+        iterator(oo[key], key, obj);
+      }
+    }
+  }
+}
+
+/**
+ * flatter request parameter
+ * @param obj target object or array
+ */
+export function flatten(obj: {
+  [propName: string]: any;
+}): { [propName: string]: any } {
+  if (!isArray(obj) && !isObject(obj)) {
+    return {};
+  }
+  const ret: { [propName: string]: any } = {};
+  const _dump = function(
+    obj: object | Array<any>,
+    prefix: string | null,
+    parents?: any[],
+  ) {
+    const checkedParents: any[] = [];
+    if (parents) {
+      let i;
+      for (i = 0; i < parents.length; i++) {
+        if (parents[i] === obj) {
+          throw new Error('object has circular references');
+        }
+        checkedParents.push(obj);
+      }
+    }
+    checkedParents.push(obj);
+    if (!isArray(obj) && !isObject(obj)) {
+      if (!prefix) {
+        throw obj + 'is not object or array';
+      }
+      ret[prefix] = obj;
+      return {};
+    }
+
+    if (isArray(obj)) {
+      // it's an array
+      _forEach(obj, function(obj, i) {
+        _dump(obj, prefix ? prefix + '.' + i : '' + i, checkedParents);
+      });
+    } else {
+      // it's an object
+      _forEach(obj, function(obj, key) {
+        _dump(obj, prefix ? prefix + '.' + key : '' + key, checkedParents);
+      });
+    }
+  };
+
+  _dump(obj, null);
+  return ret;
+}
+
+/**
  * generate tencent cloud sign result
  *
  * @param {Payload} payload
@@ -97,8 +192,9 @@ export function tencentSign(
   // const Nonce = Math.round(Math.random() * 65535)
   const date = nowTime.toISOString().slice(0, 10);
   const Algorithm = 'TC3-HMAC-SHA256';
+  payload.RequestClient = payload.RequestClient || 'TENCENT_SDK_CAPI';
 
-  payload = dotQs.flatten(payload);
+  payload = flatten(payload);
 
   // 1. create Canonical request string
   const HTTPRequestMethod = (options.method || 'POST').toUpperCase();
@@ -178,13 +274,13 @@ export function tencentSignV1(
   payload.Nonce = Nonce;
   payload.Timestamp = Timestamp;
   payload.SecretId = options.SecretId;
-  payload.RequestClient = 'SDK_NODEJS_v0.0.1';
+  payload.RequestClient = payload.RequestClient || 'SDK_NODEJS_v0.0.1';
 
   if (options.SignatureMethod === 'sha256') {
     payload.SignatureMethod = 'HmacSHA256';
   }
 
-  payload = dotQs.flatten(payload);
+  payload = flatten(payload);
 
   const keys = Object.keys(payload).sort();
   const method = (options.method || 'POST').toUpperCase();

@@ -13,7 +13,8 @@
     "access": "public"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ts-node test/index.spec.ts",
+    "clean": "rimraf ./dist tsconfig.tsbuildinfo"
   },
   "keywords": [
     "tencent-clound",
@@ -23,7 +24,6 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^3.0.0",
-    "dot-qs": "^0.2.0",
     "moment": "^2.24.0",
     "object-assign": "^4.1.1",
     "querystring": "^0.2.0",

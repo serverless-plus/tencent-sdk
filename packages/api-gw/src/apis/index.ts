@@ -27,10 +27,13 @@ const CheckExistsFromError = (err: Error) => {
   return true;
 };
 
+type ApiGwRequestData = Omit<RequestData, 'Action'>;
+type ApiGwOptions = Omit<CapiOptions, 'ServiceType'>;
+
 interface ApiObject {
   [propName: string]: (
-    data: RequestData,
-    options: CapiOptions,
+    data: ApiGwRequestData,
+    options?: ApiGwOptions,
     isV3?: boolean,
   ) => Promise<any>;
 }
@@ -75,7 +78,7 @@ export class ApiGwRequest {
   apiRequest: CapiInstance;
   apis: ApiObject = {};
 
-  constructor(options: CapiOptions) {
+  constructor(options: ApiGwOptions) {
     this.apiRequest = new Capi({
       ...options,
       ...{
@@ -88,18 +91,17 @@ export class ApiGwRequest {
 
   async request(
     Action: string,
-    data: RequestData,
-    options: CapiOptions,
-    isV3: boolean = false,
+    data: ApiGwRequestData,
+    options: ApiGwOptions | undefined,
+    isV3: boolean | undefined = false,
     needCheck: boolean = false,
   ) {
     try {
       const res = await this.apiRequest.request(
         {
-          RequestClient: 'tss-api-gw',
           Action,
           ...data,
-        },
+        } as RequestData,
         {
           ...(options || {}),
           ...{
@@ -128,9 +130,9 @@ export class ApiGwRequest {
     this.apis = {};
     this.actionList.forEach((item: string) => {
       this.apis[item] = (
-        data: RequestData,
-        options: CapiOptions,
-        isV3: boolean = false,
+        data: ApiGwRequestData,
+        options?: ApiGwOptions,
+        isV3?: boolean,
       ) => {
         return this.request(
           item,

@@ -2,12 +2,11 @@
   "name": "tencent-sdk",
   "private": true,
   "scripts": {
-    "bootstrap": "lerna exec npm install && lerna link",
-    "build": "yarn build:proto && yarn build:ts",
+    "bootstrap": "lerna bootstrap && yarn build:ts",
     "build:ts": "tsc -b tsconfig.json",
     "bundle": "ts-node -P scripts/tsconfig.json scripts/bundle.ts umd,esm",
-    "clean": "lerna clean --yes && lerna run clean && rimraf includes",
-    "release": "yarn bundle && lerna publish --exact",
+    "clean": "lerna clean --yes && lerna run clean",
+    "release": "yarn bootstrap && yarn bundle && lerna publish --exact",
     "format": "prettier --write '**/*.{ts,tsx}' --config .prettierrc"
   },
   "workspaces": [

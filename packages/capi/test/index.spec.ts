@@ -1,10 +1,10 @@
-const { Capi } = require('../dist/index');
+import { Capi } from '../src';
 
 async function main() {
   const client = new Capi({
     Region: 'ap-guangzhou',
-    SecretId: 'AKIDERQREz5KfomYBj8SUWO4zP4qSqcYAn6E',
-    SecretKey: '62rUkofMtSp7AlCPZ4LOwHMFwOcbLsBR',
+    SecretId: 'Please input SecretId',
+    SecretKey: 'Please input SecretKey',
     ServiceType: 'tmt',
   });
   try {
@@ -16,6 +16,7 @@ async function main() {
         Source: 'auto',
         Target: 'zh',
         ProjectId: 0,
+        RequestClient: 'TENCENT_SDK_CAPI',
       },
       {
         debug: true,

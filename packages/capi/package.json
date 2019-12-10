@@ -1,6 +1,6 @@
 {
   "name": "@tencent-sdk/capi",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Tencent cloud api sdk",
   "main": "dist/index.js",
   "node": "dist/index.js",

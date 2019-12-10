@@ -1,6 +1,6 @@
 {
   "name": "@tencent-sdk/function",
-  "version": "0.0.2",
+  "version": "0.0.3-alpha.0",
   "description": "Tencent cloud serverlerss function sdk",
   "main": "dist/index.js",
   "node": "dist/index.js",

@@ -4,7 +4,7 @@
   "description": "Tencent cloud serverlerss login sdk",
   "main": "dist/index.js",
   "node": "dist/index.js",
-  "browser": "dist/index.umd.js",
+  "browser": "dist/index.js",
   "module": "dist/index.esm.js",
   "jsnext:main": "dist/index.esm.js",
   "types": "dist/index.d.ts",

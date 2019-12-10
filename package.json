@@ -7,7 +7,7 @@
     "build:ts": "tsc -b tsconfig.json",
     "bundle": "ts-node -P scripts/tsconfig.json scripts/bundle.ts umd,esm",
     "clean": "lerna clean --yes && lerna run clean && rimraf includes",
-    "release": "yarn bootstrap && yarn bundle && lerna publish --exact",
+    "release": "yarn bundle && lerna publish --exact",
     "format": "prettier --write '**/*.{ts,tsx}' --config .prettierrc"
   },
   "workspaces": [

@@ -1,4 +1,3 @@
-import * as util from 'util';
 import request from 'request-promise-native';
 import os from 'os';
 import { v4 as uuidv4 } from 'uuid';
@@ -81,7 +80,7 @@ export class TencentLogin {
    * @param uuid uuid
    */
   async getShortUrl(uuid: string): Promise<Boolean | any> {
-    const url = util.format('%s?os=%s&uuid=%s', API_SHORT_URL, os.type(), uuid);
+    const url = `${API_SHORT_URL}?os=${os.type()}&uuid=${uuid}`;
     return this.getRequest(url);
   }
 
@@ -91,7 +90,7 @@ export class TencentLogin {
    * @param url auth url
    */
   async checkStatus(url: string): Promise<Boolean | any> {
-    const tokenUrl = util.format('%s%s', API_BASE_URL, url);
+    const tokenUrl = `${API_BASE_URL}${url}`;
     return this.getRequest(tokenUrl);
   }
 

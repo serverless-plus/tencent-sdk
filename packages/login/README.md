@@ -1,13 +1,13 @@
-# Tencent Serverlesss Cloud Function
+# Tencent Cloud Wechat Login
 
-Tencent serverless cloud wechat login tools.
+Tencent Cloud Wechat Login Tool.
 
 ## Usage
 
 Before use, you need create an instance:
 
 ```js
-import { TencentLogin } from '@tencent-sdk/login'
+import { TencentLogin } from '@tencent-sdk/login';
 const tencentLogin = new TencentLogin();
 
 // login

@@ -42,34 +42,34 @@ try {
 ## Options
 
 ```js
-const client = new Capi(CapiOptions)
-client.request(RequestData, RequestOptions, isV3)
+const client = new Capi(CapiOptions);
+client.request(RequestData, RequestOptions, isV3);
 ```
 
 ### `CapiOptions` for Capi Constructor
 
-| Name | Description | Type | Required | Default |
-| ------ | ------- | ------- | --------- | ------- |
-| ServiceType | tencent service type | string | true | '' |
-| Region      | request region | string | true | ap-guangzhou | 
-| SecretId | tencent account secret id | string | true | '' |
-| SecretKey | tencenttencent account secret key | string | true | '' |
-| debug |  whether enable log debug info | boolean | false | false |
-| host |  request host | string | false | false |
-| baseHost  | request domain | string | false | 'api.qcloud.com' |
-| path  | request path | string | false | '/' |
-| method  | request method | string | false | 'POST' |
-| protocol  | request protocol | string | false | 'https' |
-| SignatureMethod  | request signature | string | false | 'sha1' |
+| Name            | Description                       | Type    | Required | Default          |
+| --------------- | --------------------------------- | ------- | -------- | ---------------- |
+| ServiceType     | tencent service type              | string  | true     | ''               |
+| Region          | request region                    | string  | true     | ap-guangzhou     |
+| SecretId        | tencent account secret id         | string  | true     | ''               |
+| SecretKey       | tencenttencent account secret key | string  | true     | ''               |
+| debug           | whether enable log debug info     | boolean | false    | false            |
+| host            | request host                      | string  | false    | false            |
+| baseHost        | request domain                    | string  | false    | 'api.qcloud.com' |
+| path            | request path                      | string  | false    | '/'              |
+| method          | request method                    | string  | false    | 'POST'           |
+| protocol        | request protocol                  | string  | false    | 'https'          |
+| SignatureMethod | request signature                 | string  | false    | 'sha1'           |
 
 ### `RequestData` for reqeust method
 
-| Name | Description | Type | Required | Default |
-| ------ | ------- | ------- | --------- | ------- |
-| Action | api action | string | true | '' |
-| Version      | api version | string | true | '2018-03-21' | 
-| RequestClient | specify your service | string | false | 'TSS-CAPI' |
-| [propName] | left api parameters | any | false | '' |
+| Name          | Description          | Type   | Required | Default      |
+| ------------- | -------------------- | ------ | -------- | ------------ |
+| Action        | api action           | string | true     | ''           |
+| Version       | api version          | string | true     | '2018-03-21' |
+| RequestClient | specify your service | string | false    | 'TSS-CAPI'   |
+| [propName]    | left api parameters  | any    | false    | ''           |
 
 ### `RequestOptions` for reqeust method
 

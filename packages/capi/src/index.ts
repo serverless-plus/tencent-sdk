@@ -100,7 +100,7 @@ export class Capi implements CapiInstance {
         body: payload,
       };
     } else {
-      const { url, method, signPath } = tencentSignV1(data, options);
+      const { url, method, payload } = tencentSignV1(data, options);
       reqOption = {
         url,
         method,
@@ -109,9 +109,9 @@ export class Capi implements CapiInstance {
       };
 
       if (method === 'POST') {
-        reqOption.form = qs.parse(signPath, '', '');
+        reqOption.form = payload;
       } else {
-        reqOption.url += '?' + signPath;
+        reqOption.url += '?' + qs.stringify(payload);
       }
     }
     // debug request option

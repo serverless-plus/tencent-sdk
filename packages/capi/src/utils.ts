@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 import moment from 'moment';
 import chalk from 'chalk';
-import qs from 'querystring';
 import { CapiOptions } from './index';
 
 export interface Payload {
@@ -32,7 +31,7 @@ export interface TencentSignResult {
 export interface TencentSignResultV1 {
   url: string;
   method: string;
-  signPath: string;
+  payload: Payload;
 }
 
 export function logger(topic: string, content: string): void {
@@ -316,6 +315,6 @@ export function tencentSignV1(
   return {
     url,
     method,
-    signPath: qs.stringify(payload),
+    payload,
   };
 }

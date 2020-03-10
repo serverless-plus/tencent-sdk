@@ -191,9 +191,6 @@ export function tencentSign(
   // const Nonce = Math.round(Math.random() * 65535)
   const date = nowTime.toISOString().slice(0, 10);
   const Algorithm = 'TC3-HMAC-SHA256';
-  payload.RequestClient = payload.RequestClient || 'TENCENT_SDK_CAPI';
-
-  payload = flatten(payload);
 
   // 1. create Canonical request string
   const HTTPRequestMethod = (options.method || 'POST').toUpperCase();

@@ -49,20 +49,20 @@ client.request(RequestData, RequestOptions, isV3);
 
 ### `CapiOptions` for Capi Constructor
 
-| Name            | Description                       | Type    | Required | Default          |
-| --------------- | --------------------------------- | ------- | -------- | ---------------- |
-| ServiceType     | tencent service type              | string  | true     | ''               |
-| Region          | request region                    | string  | true     | ap-guangzhou     |
-| SecretId        | tencent account secret id         | string  | true     | ''               |
-| SecretKey       | tencenttencent account secret key | string  | true     | ''               |
-| Token           | tencenttencent account token      | string  | false    | ''               |
-| debug           | whether enable log debug info     | boolean | false    | false            |
-| host            | request host                      | string  | false    | false            |
-| baseHost        | request domain                    | string  | false    | 'api.qcloud.com' |
-| path            | request path                      | string  | false    | '/'              |
-| method          | request method                    | string  | false    | 'POST'           |
-| protocol        | request protocol                  | string  | false    | 'https'          |
-| SignatureMethod | request signature                 | string  | false    | 'sha1'           |
+| Name            | Description                   | Type    | Required | Default          |
+| --------------- | ----------------------------- | ------- | -------- | ---------------- |
+| ServiceType     | tencent service type          | string  | true     | ''               |
+| Region          | request region                | string  | true     | ap-guangzhou     |
+| SecretId        | tencent account secret id     | string  | true     | ''               |
+| SecretKey       | tencent account secret key    | string  | true     | ''               |
+| Token           | tencent account token         | string  | false    | ''               |
+| debug           | whether enable log debug info | boolean | false    | false            |
+| host            | request host                  | string  | false    | false            |
+| baseHost        | request domain                | string  | false    | 'api.qcloud.com' |
+| path            | request path                  | string  | false    | '/'              |
+| method          | request method                | string  | false    | 'POST'           |
+| protocol        | request protocol              | string  | false    | 'https'          |
+| SignatureMethod | request signature             | string  | false    | 'sha1'           |
 
 ### `RequestData` for reqeust method
 

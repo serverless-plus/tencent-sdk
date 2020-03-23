@@ -14,6 +14,7 @@ export interface CapiOptions {
   Region: string; // request region, default: ap-guangzhou
   SecretId: string; // tencent account secret id
   SecretKey: string; // tencent account secret key
+  Token?: string; // tencent account token
   SignatureMethod?: string; // request signature method, default: sha1
 }
 
@@ -99,6 +100,9 @@ export class Capi implements CapiInstance {
         },
         body: payload,
       };
+      if (this.options.Token) {
+        reqOption.headers['X-TC-Token'] = this.options.Token
+      }
     } else {
       const { url, method, payload } = tencentSignV1(data, options);
       reqOption = {

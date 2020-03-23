@@ -101,7 +101,10 @@ export class Capi implements CapiInstance {
         body: payload,
       };
       if (this.options.Token) {
-        reqOption.headers['X-TC-Token'] = this.options.Token
+        if (!reqOption.headers) {
+          reqOption.headers = {};
+        }
+        reqOption.headers['X-TC-Token'] = this.options.Token;
       }
     } else {
       const { url, method, payload } = tencentSignV1(data, options);

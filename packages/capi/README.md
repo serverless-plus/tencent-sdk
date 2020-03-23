@@ -8,12 +8,13 @@ This is a basement api tool for all tencent cloud apis.
 You can use it like below:
 
 ```js
-import { Capi } from 'tss-capi';
+import { Capi } from '@tencent-sdk/capi';
 
 const client = new Capi({
   Region: 'ap-guangzhou',
   SecretId: 'Please input your SecretId',
   SecretKey: 'Please input your SecretKey',
+  Token: 'Please input your Token',
   ServiceType: 'tmt',
 });
 try {
@@ -54,6 +55,7 @@ client.request(RequestData, RequestOptions, isV3);
 | Region          | request region                    | string  | true     | ap-guangzhou     |
 | SecretId        | tencent account secret id         | string  | true     | ''               |
 | SecretKey       | tencenttencent account secret key | string  | true     | ''               |
+| Token           | tencenttencent account token      | string  | false    | ''               |
 | debug           | whether enable log debug info     | boolean | false    | false            |
 | host            | request host                      | string  | false    | false            |
 | baseHost        | request domain                    | string  | false    | 'api.qcloud.com' |

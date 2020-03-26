@@ -1,6 +1,6 @@
 {
   "name": "@tencent-sdk/api-gw",
-  "version": "0.0.12-alpha.0",
+  "version": "0.0.12",
   "description": "Tencent cloud api gateway sdk",
   "main": "dist/index.js",
   "node": "dist/index.js",
@@ -23,7 +23,7 @@
   "author": "yugasun",
   "license": "MIT",
   "dependencies": {
-    "@tencent-sdk/capi": "0.2.15-alpha.0",
+    "@tencent-sdk/capi": "0.2.15",
     "joi": "^14.3.1"
   },
   "devDependencies": {

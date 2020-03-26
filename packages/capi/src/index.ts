@@ -3,6 +3,8 @@ import assign from 'object-assign';
 import qs from 'querystring';
 import { logger, tencentSign, tencentSignV1 } from './utils';
 
+export { tencentSign, tencentSignV1 } from './utils';
+
 export interface CapiOptions {
   debug?: boolean; // whether enable log debug info
   host?: string; // request host

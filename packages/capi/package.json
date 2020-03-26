@@ -23,8 +23,6 @@
   "author": "yugasun",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^3.0.0",
-    "moment": "^2.24.0",
     "object-assign": "^4.1.1",
     "querystring": "^0.2.0",
     "request": "^2.88.0",

@@ -1,6 +1,6 @@
 {
   "name": "@tencent-sdk/capi-web",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Tencent cloud api sdk for browser",
   "main": "dist/index.js",
   "node": "dist/index.js",

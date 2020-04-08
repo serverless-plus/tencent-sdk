@@ -1,6 +1,4 @@
 import crypto from 'crypto';
-import moment from 'moment';
-import chalk from 'chalk';
 import { CapiOptions } from './index';
 
 export interface Payload {
@@ -35,11 +33,7 @@ export interface TencentSignResultV1 {
 }
 
 export function logger(topic: string, content: string): void {
-  console.log(
-    `${chalk.black.bgYellow('[DEBUG]')} ${chalk.green(
-      `${topic}:`,
-    )} ${content} `,
-  );
+  console.log(`[DEBUG] ${topic}: ${content} `);
 }
 
 export function getHost(
@@ -50,6 +44,20 @@ export function getHost(
     host = `${ServiceType}${isV1 ? '' : `.${Region}`}.${baseHost}`;
   }
   return host;
+}
+
+export function getUnixTime(date: Date) {
+  const val = date.getTime();
+  return Math.ceil(val / 1000);
+}
+
+export function getDate(date: Date) {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return `${year}-${month > 9 ? month : `0${month}`}-${
+    day > 9 ? day : `0${day}`
+  }`;
 }
 
 export function getUrl(opts: HostParams, isV1 = false) {
@@ -186,10 +194,9 @@ export function tencentSign(
   };
   const url = getUrl(hostParams);
   const Host = getHost(hostParams);
-  const nowTime = moment();
-  const Timestamp = nowTime.unix();
-  // const Nonce = Math.round(Math.random() * 65535)
-  const date = nowTime.toISOString().slice(0, 10);
+  const d = new Date();
+  const Timestamp = getUnixTime(d);
+  const date = getDate(d);
   const Algorithm = 'TC3-HMAC-SHA256';
 
   // 1. create Canonical request string
@@ -224,14 +231,6 @@ export function tencentSign(
   // 4. create authorization
   const Authorization = `${Algorithm} Credential=${options.SecretId}/${CredentialScope}, SignedHeaders=${SignedHeaders}, Signature=${Signature}`;
 
-  // log debug info
-  if (options.debug) {
-    logger('CanonicalRequest', CanonicalRequest);
-    logger('StringToSign', StringToSign);
-    logger('Signature', Signature);
-    logger('Authorization', Authorization);
-  }
-
   return {
     url,
     payload,
@@ -262,8 +261,8 @@ export function tencentSignV1(
   };
   const url = getUrl(hostParams, true);
   const Host = getHost(hostParams, true);
-  const nowTime = moment();
-  const Timestamp = nowTime.unix();
+  const d = new Date();
+  const Timestamp = getUnixTime(d);
   const Nonce = Math.round(Math.random() * 65535);
 
   payload.Region = options.Region;

@@ -3,6 +3,8 @@ import assign from 'object-assign';
 import qs from 'querystring';
 import { logger, tencentSign, tencentSignV1 } from './utils';
 
+export { tencentSign, tencentSignV1 } from './utils';
+
 export interface CapiOptions {
   debug?: boolean; // whether enable log debug info
   host?: string; // request host
@@ -101,7 +103,10 @@ export class Capi implements CapiInstance {
         body: payload,
       };
       if (this.options.Token) {
-        reqOption.headers['X-TC-Token'] = this.options.Token
+        if (!reqOption.headers) {
+          reqOption.headers = {};
+        }
+        reqOption.headers['X-TC-Token'] = this.options.Token;
       }
     } else {
       const { url, method, payload } = tencentSignV1(data, options);

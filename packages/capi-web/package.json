@@ -1,0 +1,38 @@
+{
+  "name": "@tencent-sdk/capi-web",
+  "version": "0.1.0",
+  "description": "Tencent cloud api sdk for browser",
+  "main": "dist/index.js",
+  "node": "dist/index.js",
+  "browser": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "jsnext:main": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "ts-node test/index.spec.ts",
+    "clean": "rimraf ./dist tsconfig.tsbuildinfo"
+  },
+  "keywords": [
+    "tencent-clound",
+    "api",
+    "web",
+    "browser"
+  ],
+  "author": "yugasun",
+  "license": "MIT",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yugasun/tencent-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yugasun/tencent-sdk/issues"
+  },
+  "homepage": "https://github.com/yugasun/tencent-sdk#readme"
+}

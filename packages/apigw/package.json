@@ -1,6 +1,6 @@
 {
-  "name": "@tencent-sdk/api-gw",
-  "version": "0.0.12",
+  "name": "@tencent-sdk/apigw",
+  "version": "0.0.0",
   "description": "Tencent cloud api gateway sdk",
   "main": "dist/index.js",
   "node": "dist/index.js",
@@ -18,7 +18,9 @@
   },
   "keywords": [
     "tencent-clound",
-    "api-gateway"
+    "api",
+    "web",
+    "browser"
   ],
   "author": "yugasun",
   "license": "MIT",

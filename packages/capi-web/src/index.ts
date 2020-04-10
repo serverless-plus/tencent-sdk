@@ -99,17 +99,9 @@ async function request(
   opts?: RequestOpts,
 ): Promise<any> {
   opts = opts || {};
-  try {
-    const postSend = await proxyReady();
-    const data = await postSend(url, params, opts);
-    return data && data.data ? data.data : null;
-  } catch (e) {
-    try {
-      return JSON.parse(e.responseText);
-    } catch (error) {
-      return e.responseText;
-    }
-  }
+  const postSend = await proxyReady();
+  const data = await postSend(url, params, opts);
+  return data;
 }
 
 /**
@@ -136,7 +128,10 @@ export async function CapiRequest(
     params,
     opts,
   );
-  const Response = data && data.Response;
+  if (data.code === 'VERIFY_LOGIN_FAILED') {
+    return data;
+  }
+  const Response = data && data.data && data.data.Response;
   if (Response && Response.Error) {
     throw Response.Error;
   }

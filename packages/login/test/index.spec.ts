@@ -5,14 +5,16 @@ async function main() {
   const loginData = await tLogin.login();
   console.log('Login Result: ', loginData);
 
-  const res = await tLogin.refresh(
-    loginData.uuid,
-    loginData.expired,
-    loginData.signature,
-    loginData.appid,
-  );
+  if (loginData) {
+    const res = await tLogin.refresh(
+      loginData.uuid,
+      loginData.expired,
+      loginData.signature,
+      loginData.appid,
+    );
 
-  console.log('Flush Result: ', res);
+    console.log('Flush Result: ', res);
+  }
 }
 
 main();

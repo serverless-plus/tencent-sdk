@@ -2,12 +2,8 @@ import request from 'request-promise-native';
 import os from 'os';
 import { v4 as uuidv4 } from 'uuid';
 import qrcode from 'qrcode';
-import {
-  API_BASE_URL,
-  API_SHORT_URL,
-  REFRESH_TOKEN_URL,
-  ONE_SECOND,
-} from './constant';
+import { sleep, waitResponse } from '@ygkit/request';
+import { API_BASE_URL, API_SHORT_URL, REFRESH_TOKEN_URL } from './constant';
 
 export interface ApiUrl {
   login_status_url: string;
@@ -37,13 +33,7 @@ export interface LoginResult {
 
 export class TencentLogin {
   // timeout in seconds
-  public TIMEOUT: number = 60;
-
-  sleep(ms: number): Promise<any> {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-  }
+  public TIMEOUT: number = 60000;
 
   /**
    * convert string to qrcode
@@ -51,9 +41,11 @@ export class TencentLogin {
    */
   async printQrCode(str: string) {
     const url = await qrcode.toString(str, {
-      type: 'terminal',
+      type: 'utf8',
+      errorCorrectionLevel: 'M',
     });
-    console.log(url);
+    // print cyan color qrcode
+    console.log(`\u001b[36m ${url} \u001b[39m`);
   }
 
   /**
@@ -89,9 +81,21 @@ export class TencentLogin {
    * @param uuid uuid
    * @param url auth url
    */
-  async checkStatus(url: string): Promise<Boolean | any> {
+  async checkStatus(url: string): Promise<Boolean | LoginData> {
     const tokenUrl = `${API_BASE_URL}${url}`;
-    return this.getRequest(tokenUrl);
+    try {
+      const res = await request.get(tokenUrl, {
+        json: true,
+      });
+
+      if (res.success !== true) {
+        return false;
+      }
+
+      return res;
+    } catch (e) {
+      return false;
+    }
   }
 
   /**
@@ -111,41 +115,6 @@ export class TencentLogin {
     return this.getRequest(url);
   }
 
-  /**
-   * checking login status in loop
-   * @param param0 loop status need parameters: { uuid: string; apiUrl: ApiUrl }
-   * @param timeout timeout in seconds
-   * @param resolve promise resolve
-   * @param reject promise reject
-   */
-  async loopStatus(
-    { uuid, apiUrl }: { uuid: string; apiUrl: ApiUrl },
-    timeout: number,
-    resolve?: (value?: LoginData) => void,
-    reject?: (reason?: Boolean) => void,
-  ): Promise<LoginData | Boolean> {
-    return new Promise(async (res, rej) => {
-      resolve = resolve || res;
-      reject = reject || rej;
-      try {
-        // timeout
-        if (timeout <= 0) {
-          reject(false);
-        }
-        const loginData = await this.checkStatus(apiUrl.login_status_url);
-        if (loginData !== false) {
-          resolve(loginData);
-        } else {
-          timeout--;
-          await this.sleep(ONE_SECOND);
-          return this.loopStatus({ uuid, apiUrl }, timeout, resolve, reject);
-        }
-      } catch (e) {
-        reject(false);
-      }
-    });
-  }
-
   async login(): Promise<LoginResult | undefined> {
     try {
       const uuid = uuidv4();
@@ -156,16 +125,15 @@ export class TencentLogin {
       console.log('Please scan QR code login from wechat');
       console.log('Wait login...');
       // wait 3s start check login status
-      await this.sleep(3000);
+      await sleep(3000);
       try {
         // 2. loop get login status
-        const loginData = (await this.loopStatus(
-          {
-            uuid,
-            apiUrl,
-          },
-          this.TIMEOUT,
-        )) as LoginData;
+        const loginData = await waitResponse({
+          callback: async () => this.checkStatus(apiUrl.login_status_url),
+          timeout: this.TIMEOUT,
+          targetProp: 'success',
+          targetResponse: true,
+        });
 
         const configure = {
           secret_id: loginData.secret_id,

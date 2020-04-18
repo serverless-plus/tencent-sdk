@@ -1,6 +1,6 @@
 {
   "name": "@tencent-sdk/apigw",
-  "version": "0.1.0",
+  "version": "0.1.1-alpha.0",
   "description": "Tencent cloud api gateway sdk",
   "main": "dist/index.js",
   "node": "dist/index.js",

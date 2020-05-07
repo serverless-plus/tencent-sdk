@@ -131,7 +131,8 @@ export async function CapiRequest(
   if (data.code === 'VERIFY_LOGIN_FAILED') {
     return data;
   }
-  const Response = data && data.data && data.data.Response;
+  const Response =
+    data && data.data && (data.data.Response || data.data.data || null);
   if (Response && Response.Error) {
     throw Response.Error;
   }

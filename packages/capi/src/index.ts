@@ -40,6 +40,7 @@ export interface RequestOptions {
   SecretKey?: string;
   maxKeys?: number;
   SignatureMethod?: string;
+  timeout?: number;
 }
 
 export interface CapiInstance {
@@ -122,6 +123,10 @@ export class Capi implements CapiInstance {
       } else {
         reqOption.url += '?' + qs.stringify(payload);
       }
+    }
+
+    if (options.timeout) {
+      reqOption.timeout = options.timeout;
     }
     // debug request option
     if (options.debug) {

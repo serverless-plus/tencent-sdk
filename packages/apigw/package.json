@@ -25,11 +25,7 @@
   "author": "yugasun",
   "license": "MIT",
   "dependencies": {
-    "@tencent-sdk/capi": "0.2.16",
-    "joi": "^14.3.1"
-  },
-  "devDependencies": {
-    "@types/joi": "^14.3.4"
+    "@tencent-sdk/capi": "0.2.16"
   },
   "directories": {
     "test": "test"

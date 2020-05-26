@@ -1,4 +1,4 @@
-import rp, { Options } from 'request-promise-native';
+import * as rp from 'request-promise-native';
 import assign from 'object-assign';
 import qs from 'querystring';
 import { logger, tencentSign, tencentSignV1 } from './utils';
@@ -81,7 +81,7 @@ export class Capi implements CapiInstance {
       method: '',
       json: true,
       strictSSL: false,
-    } as Options;
+    } as rp.Options;
     if (isV3) {
       const { url, payload, Authorization, Timestamp, Host } = tencentSign(
         restData,
@@ -133,6 +133,6 @@ export class Capi implements CapiInstance {
       logger('Request Option', JSON.stringify(reqOption));
     }
 
-    return rp(reqOption);
+    return rp.default(reqOption);
   }
 }

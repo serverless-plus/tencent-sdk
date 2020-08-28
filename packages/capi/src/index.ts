@@ -6,6 +6,7 @@ import { logger, tencentSign, tencentSignV1 } from './utils';
 export { tencentSign, tencentSignV1 } from './utils';
 
 export interface CapiOptions {
+  isV3?: boolean; // whether to use version3 sign method
   debug?: boolean; // whether enable log debug info
   host?: string; // request host
   baseHost?: string; // request domain, default: api.qcloud.com
@@ -18,6 +19,8 @@ export interface CapiOptions {
   SecretKey: string; // tencent account secret key
   Token?: string; // tencent account token
   SignatureMethod?: string; // request signature method, default: sha1
+  RequestClient?: string; // request client
+  timeout?: number;
 }
 
 export interface RequestData {
@@ -27,21 +30,7 @@ export interface RequestData {
   [propName: string]: any; // left api parameters
 }
 
-export interface RequestOptions {
-  debug?: boolean;
-  host?: string;
-  baseHost?: string;
-  path?: string;
-  method?: string;
-  protocol?: string;
-  ServiceType?: string;
-  Region?: string;
-  SecretId?: string;
-  SecretKey?: string;
-  maxKeys?: number;
-  SignatureMethod?: string;
-  timeout?: number;
-}
+export interface RequestOptions extends CapiOptions {}
 
 export interface CapiInstance {
   request: (
@@ -53,7 +42,7 @@ export interface CapiInstance {
 
 export class Capi implements CapiInstance {
   options: CapiOptions;
-  defaultOptions: RequestOptions = {
+  defaultOptions: CapiOptions = {
     path: '/', // api request path
     method: 'POST',
     protocol: 'https',
@@ -82,7 +71,7 @@ export class Capi implements CapiInstance {
       json: true,
       strictSSL: false,
     } as rp.Options;
-    if (isV3) {
+    if (isV3 || opts.isV3) {
       const { url, payload, Authorization, Timestamp, Host } = tencentSign(
         restData,
         options,
@@ -108,6 +97,12 @@ export class Capi implements CapiInstance {
           reqOption.headers = {};
         }
         reqOption.headers['X-TC-Token'] = this.options.Token;
+      }
+      if (opts.RequestClient) {
+        if (!reqOption.headers) {
+          reqOption.headers = {};
+        }
+        reqOption.headers['X-TC-RequestClient'] = opts.RequestClient;
       }
     } else {
       const { url, method, payload } = tencentSignV1(data, options);

@@ -269,7 +269,8 @@ export function tencentSignV1(
   payload.Nonce = Nonce;
   payload.Timestamp = Timestamp;
   payload.SecretId = options.SecretId;
-  payload.RequestClient = payload.RequestClient || 'SDK_NODEJS_v0.0.1';
+  payload.RequestClient =
+    options.RequestClient || payload.RequestClient || 'SDK_NODEJS_v0.0.1';
 
   if (options.SignatureMethod === 'sha256') {
     payload.SignatureMethod = 'HmacSHA256';

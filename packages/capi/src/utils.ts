@@ -270,8 +270,11 @@ export function tencentSignV1(
   payload.Timestamp = Timestamp;
   payload.SecretId = options.SecretId;
   payload.RequestClient =
-    options.RequestClient || payload.RequestClient || 'SDK_NODEJS_v0.0.1';
+    options.RequestClient || payload.RequestClient || '@tencent-sdk/capi';
 
+  if (options.Token) {
+    payload.Token = options.Token;
+  }
   if (options.SignatureMethod === 'sha256') {
     payload.SignatureMethod = 'HmacSHA256';
   }

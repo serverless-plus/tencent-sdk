@@ -1,4 +1,4 @@
-import request from 'request-promise-native';
+import axios from 'axios';
 import os from 'os';
 import { v4 as uuidv4 } from 'uuid';
 import qrcode from 'qrcode';
@@ -54,14 +54,12 @@ export class TencentLogin {
    */
   async getRequest(url: string): Promise<Boolean | any> {
     try {
-      const res = await request.get(url, {
-        json: true,
-      });
+      const { data } = await axios.get(url);
 
-      if (res.success !== true) {
+      if (data.success !== true) {
         return false;
       }
-      return res;
+      return data;
     } catch (e) {
       return false;
     }
@@ -84,15 +82,13 @@ export class TencentLogin {
   async checkStatus(url: string): Promise<Boolean | LoginData> {
     const tokenUrl = `${API_BASE_URL}${url}`;
     try {
-      const res = await request.get(tokenUrl, {
-        json: true,
-      });
+      const { data } = await axios.get(tokenUrl);
 
-      if (res.success !== true) {
+      if (data.success !== true) {
         return false;
       }
 
-      return res;
+      return data;
     } catch (e) {
       return false;
     }

@@ -3,6 +3,7 @@ import {
   CapiInstance,
   CapiOptions,
   RequestData,
+  RequestOptions,
 } from '@tencent-sdk/capi';
 
 class HttpError extends Error {
@@ -27,7 +28,7 @@ const CheckExistsFromError = (err: Error) => {
 };
 
 type ApiGwRequestData = Omit<RequestData, 'Action'>;
-type ApiGwOptions = Omit<CapiOptions, 'ServiceType'>;
+type ApiGwOptions = Omit<RequestOptions, 'ServiceType'>;
 
 interface ApiObject {
   [propName: string]: (
@@ -77,7 +78,7 @@ export class ApiGwRequest {
   apiRequest: CapiInstance;
   apis: ApiObject = {};
 
-  constructor(options: ApiGwOptions) {
+  constructor(options: CapiOptions) {
     this.apiRequest = new Capi({
       ...options,
       ...{
@@ -101,12 +102,7 @@ export class ApiGwRequest {
           Action,
           ...data,
         } as RequestData,
-        {
-          ...(options || {}),
-          ...{
-            path: '/v2/index.php',
-          },
-        },
+        options as RequestOptions,
         isV3,
       );
 

@@ -2,6 +2,11 @@
 
 This is a basement api tool for all tencent cloud apis supporting Node.js and Browser.
 
+## Supports
+
+- [x] Node.js
+- [ ] Browser
+
 ## Usage
 
 `Capi` is the only class for create a client request instance, and the instance only has one method `request`.

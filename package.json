@@ -5,7 +5,7 @@
     "bootstrap": "lerna bootstrap",
     "bundle": "ts-node -P scripts/tsconfig.json scripts/bundle.ts umd,esm",
     "clean": "lerna clean --yes && lerna run clean",
-    "release": "lerna publish --exact",
+    "release": "yarn run bundle && lerna publish --exact",
     "prettier": "prettier --check '**/*.{ts,tsx,md}' --config .prettierrc",
     "prettier:fix": "prettier --write '**/*.{ts,tsx,md}' --config .prettierrc"
   },

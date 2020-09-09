@@ -3,8 +3,8 @@ import { Capi } from '../src';
 async function main() {
   const client = new Capi({
     Region: 'ap-guangzhou',
-    SecretId: 'Please input SecretId',
-    SecretKey: 'Please input SecretKey',
+    SecretId: '',
+    SecretKey: '',
     ServiceType: 'tmt',
   });
   try {
@@ -20,9 +20,9 @@ async function main() {
       },
       {
         debug: true,
+        isV3: false,
         host: 'tmt.tencentcloudapi.com',
       },
-      false,
     );
     console.log('V1 Sign Result: ', res1);
 
@@ -37,9 +37,9 @@ async function main() {
       },
       {
         debug: true,
+        isV3: true,
         host: 'tmt.tencentcloudapi.com',
       },
-      true,
     );
     console.log('V3 Sign Result: ', res2);
   } catch (e) {

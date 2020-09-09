@@ -1,7 +1,5 @@
-import * as rp from 'request-promise-native';
-import assign from 'object-assign';
-import qs from 'querystring';
-import { logger, tencentSign, tencentSignV1 } from './utils';
+import axios, { AxiosRequestConfig, Method } from 'axios';
+import { logger, tencentSign, tencentSignV1, stringify } from './utils';
 
 export { tencentSign, tencentSignV1 } from './utils';
 
@@ -13,6 +11,7 @@ export interface CapiOptions {
   path?: string; // request path, default: /
   method?: string; // request method, default: POST
   protocol?: string; // request protocol, default: https
+  timeout?: number; // request timeout in miliseconds
   ServiceType: string; // tencent service type, eg: apigateway
   Region: string; // request region, default: ap-guangzhou
   SecretId: string; // tencent account secret id
@@ -20,7 +19,6 @@ export interface CapiOptions {
   Token?: string; // tencent account token
   SignatureMethod?: string; // request signature method, default: sha1
   RequestClient?: string; // request client
-  timeout?: number;
 }
 
 export interface RequestData {
@@ -30,7 +28,17 @@ export interface RequestData {
   [propName: string]: any; // left api parameters
 }
 
-export interface RequestOptions extends CapiOptions {}
+export interface RequestOptions {
+  isV3?: boolean; // whether to use version3 sign method
+  debug?: boolean; // whether enable log debug info
+  host?: string; // request host
+  baseHost?: string; // request domain, default: api.qcloud.com
+  path?: string; // request path, default: /
+  method?: string; // request method, default: POST
+  protocol?: string; // request protocol, default: https
+  timeout?: number; // request timeout in miliseconds
+  RequestClient?: string; // request client
+}
 
 export interface CapiInstance {
   request: (
@@ -55,23 +63,21 @@ export class Capi implements CapiInstance {
   };
 
   constructor(options: CapiOptions) {
-    this.options = assign(this.defaultOptions, options);
+    this.options = Object.assign(this.defaultOptions, options);
   }
 
-  request(
+  async request(
     data: RequestData,
     opts: RequestOptions = this.defaultOptions,
     isV3 = false,
   ) {
-    const options = assign(this.options, opts);
+    const options = Object.assign(this.options, opts);
     const { Action, Version, ...restData } = data;
     let reqOption = {
       url: '',
-      method: '',
-      json: true,
-      strictSSL: false,
-    } as rp.Options;
-    if (isV3 || opts.isV3) {
+      method: 'POST',
+    } as AxiosRequestConfig;
+    if (isV3 || options.isV3) {
       const { url, payload, Authorization, Timestamp, Host } = tencentSign(
         restData,
         options,
@@ -79,8 +85,6 @@ export class Capi implements CapiInstance {
       reqOption = {
         url,
         method: 'POST',
-        json: true,
-        strictSSL: false,
         headers: {
           'Content-Type': 'application/json',
           Authorization: Authorization,
@@ -90,7 +94,7 @@ export class Capi implements CapiInstance {
           'X-TC-Timestamp': Timestamp,
           'X-TC-Region': options.Region,
         },
-        body: payload,
+        data: payload,
       };
       if (this.options.Token) {
         if (!reqOption.headers) {
@@ -108,15 +112,13 @@ export class Capi implements CapiInstance {
       const { url, method, payload } = tencentSignV1(data, options);
       reqOption = {
         url,
-        method,
-        json: true,
-        strictSSL: false,
+        method: method as Method,
       };
 
       if (method === 'POST') {
-        reqOption.form = payload;
+        reqOption.data = payload;
       } else {
-        reqOption.url += '?' + qs.stringify(payload);
+        reqOption.url += '?' + stringify(payload);
       }
     }
 
@@ -128,6 +130,7 @@ export class Capi implements CapiInstance {
       logger('Request Option', JSON.stringify(reqOption));
     }
 
-    return rp.default(reqOption);
+    const result = await axios(reqOption);
+    return result.data;
   }
 }

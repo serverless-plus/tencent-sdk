@@ -266,6 +266,7 @@ export function tencentSignV1(
   const Nonce = Math.round(Math.random() * 65535);
 
   payload.Region = options.Region;
+  payload.Version = payload.Version || options.Version;
   payload.Nonce = Nonce;
   payload.Timestamp = Timestamp;
   payload.SecretId = options.SecretId;

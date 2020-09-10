@@ -13,6 +13,7 @@ export interface CapiOptions {
   protocol?: string; // request protocol, default: https
   timeout?: number; // request timeout in miliseconds
   ServiceType: string; // tencent service type, eg: apigateway
+  Version?: string; // tencent service type, eg: apigateway
   Region: string; // request region, default: ap-guangzhou
   SecretId: string; // tencent account secret id
   SecretKey: string; // tencent account secret key
@@ -24,7 +25,7 @@ export interface CapiOptions {
 export interface RequestData {
   Action: string; // request action
   RequestClient?: string; // optional, just to specify your service
-  Version: string; // api version, default: 2018-03-21
+  Version?: string; // api version, default: 2018-03-21
   [propName: string]: any; // left api parameters
 }
 
@@ -90,7 +91,7 @@ export class Capi implements CapiInstance {
           Authorization: Authorization,
           Host: Host,
           'X-TC-Action': Action,
-          'X-TC-Version': Version || '2018-03-21',
+          'X-TC-Version': Version || options.Version,
           'X-TC-Timestamp': Timestamp,
           'X-TC-Region': options.Region,
         },

@@ -6,12 +6,12 @@ async function main() {
     SecretId: '',
     SecretKey: '',
     ServiceType: 'tmt',
+    Version: '2018-03-21',
   });
   try {
     const res1 = await client.request(
       {
         Action: 'TextTranslate',
-        Version: '2018-03-21',
         SourceText: 'hello',
         Source: 'auto',
         Target: 'zh',
@@ -29,7 +29,6 @@ async function main() {
     const res2 = await client.request(
       {
         Action: 'TextTranslate',
-        Version: '2018-03-21',
         SourceText: 'hello',
         Source: 'auto',
         Target: 'zh',

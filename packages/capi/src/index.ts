@@ -1,5 +1,7 @@
-import axios, { AxiosRequestConfig, Method } from 'axios';
-import { logger, tencentSign, tencentSignV1, stringify } from './utils';
+import * as rp from 'request-promise-native';
+import assign from 'object-assign';
+import qs from 'querystring';
+import { logger, tencentSign, tencentSignV1 } from './utils';
 
 export { tencentSign, tencentSignV1 } from './utils';
 
@@ -64,21 +66,23 @@ export class Capi implements CapiInstance {
   };
 
   constructor(options: CapiOptions) {
-    this.options = Object.assign(this.defaultOptions, options);
+    this.options = assign(this.defaultOptions, options);
   }
 
-  async request(
+  request(
     data: RequestData,
     opts: RequestOptions = this.defaultOptions,
     isV3 = false,
   ) {
-    const options = Object.assign(this.options, opts);
+    const options = assign(this.options, opts);
     const { Action, Version, ...restData } = data;
     let reqOption = {
       url: '',
-      method: 'POST',
-    } as AxiosRequestConfig;
-    if (isV3 || options.isV3) {
+      method: '',
+      json: true,
+      strictSSL: false,
+    } as rp.Options;
+    if (isV3 || opts.isV3) {
       const { url, payload, Authorization, Timestamp, Host } = tencentSign(
         restData,
         options,
@@ -86,6 +90,8 @@ export class Capi implements CapiInstance {
       reqOption = {
         url,
         method: 'POST',
+        json: true,
+        strictSSL: false,
         headers: {
           'Content-Type': 'application/json',
           Authorization: Authorization,
@@ -95,7 +101,7 @@ export class Capi implements CapiInstance {
           'X-TC-Timestamp': Timestamp,
           'X-TC-Region': options.Region,
         },
-        data: payload,
+        body: payload,
       };
       if (this.options.Token) {
         if (!reqOption.headers) {
@@ -113,13 +119,15 @@ export class Capi implements CapiInstance {
       const { url, method, payload } = tencentSignV1(data, options);
       reqOption = {
         url,
-        method: method as Method,
+        method,
+        json: true,
+        strictSSL: false,
       };
 
       if (method === 'POST') {
-        reqOption.data = payload;
+        reqOption.form = payload;
       } else {
-        reqOption.url += '?' + stringify(payload);
+        reqOption.url += '?' + qs.stringify(payload);
       }
     }
 
@@ -131,7 +139,6 @@ export class Capi implements CapiInstance {
       logger('Request Option', JSON.stringify(reqOption));
     }
 
-    const result = await axios(reqOption);
-    return result.data;
+    return rp.default(reqOption);
   }
 }

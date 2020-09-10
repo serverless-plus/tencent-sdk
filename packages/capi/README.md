@@ -1,11 +1,6 @@
 ## Tencent Cound API
 
-This is a basement api tool for all tencent cloud apis supporting Node.js and Browser.
-
-## Supports
-
-- [x] Node.js
-- [ ] Browser
+This is a basement api tool for all tencent cloud apis.
 
 ## Usage
 
@@ -54,22 +49,20 @@ client.request(RequestData, RequestOptions, isV3);
 
 ### `CapiOptions` for Capi Constructor
 
-| Name            | Description                                      | Type    | Required | Default             |
-| --------------- | ------------------------------------------------ | ------- | -------- | ------------------- |
-| isV3            | whether to use version 3 sign for authentication | boolean | false    | false               |
-| debug           | whether enable log debug info                    | boolean | false    | false               |
-| host            | request host                                     | string  | false    | false               |
-| baseHost        | request domain                                   | string  | false    | 'api.qcloud.com'    |
-| path            | request path                                     | string  | false    | '/'                 |
-| method          | request method                                   | string  | false    | 'POST'              |
-| protocol        | request protocol                                 | string  | false    | 'https'             |
-| ServiceType     | tencent service type                             | string  | true     | ''                  |
-| Region          | request region                                   | string  | true     | ap-guangzhou        |
-| SecretId        | tencent account secret id                        | string  | true     | ''                  |
-| SecretKey       | tencent account secret key                       | string  | true     | ''                  |
-| Token           | tencent account token                            | string  | false    | ''                  |
-| SignatureMethod | request signature                                | string  | false    | 'sha1'              |
-| RequestClient   | request client for api mark                      | string  | false    | '@tencent-sdk/capi' |
+| Name            | Description                   | Type    | Required | Default          |
+| --------------- | ----------------------------- | ------- | -------- | ---------------- |
+| ServiceType     | tencent service type          | string  | true     | ''               |
+| Region          | request region                | string  | true     | ap-guangzhou     |
+| SecretId        | tencent account secret id     | string  | true     | ''               |
+| SecretKey       | tencent account secret key    | string  | true     | ''               |
+| Token           | tencent account token         | string  | false    | ''               |
+| debug           | whether enable log debug info | boolean | false    | false            |
+| host            | request host                  | string  | false    | false            |
+| baseHost        | request domain                | string  | false    | 'api.qcloud.com' |
+| path            | request path                  | string  | false    | '/'              |
+| method          | request method                | string  | false    | 'POST'           |
+| protocol        | request protocol              | string  | false    | 'https'          |
+| SignatureMethod | request signature             | string  | false    | 'sha1'           |
 
 ### `RequestData` for reqeust method
 
@@ -82,15 +75,7 @@ client.request(RequestData, RequestOptions, isV3);
 
 ### `RequestOptions` for reqeust method
 
-| Name          | Description                   | Type    | Required | Default             |
-| ------------- | ----------------------------- | ------- | -------- | ------------------- |
-| debug         | whether enable log debug info | boolean | false    | false               |
-| host          | request host                  | string  | false    | false               |
-| baseHost      | request domain                | string  | false    | 'api.qcloud.com'    |
-| path          | request path                  | string  | false    | '/'                 |
-| method        | request method                | string  | false    | 'POST'              |
-| protocol      | request protocol              | string  | false    | 'https'             |
-| RequestClient | request client for api mark   | string  | false    | '@tencent-sdk/capi' |
+It is a copy from `CapiOptions`, if you set this, you can rewrite the properties in `CapiOptions`.
 
 ### `isV3` for request method
 

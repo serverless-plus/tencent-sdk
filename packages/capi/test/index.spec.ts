@@ -3,8 +3,8 @@ import { Capi } from '../src';
 async function main() {
   const client = new Capi({
     Region: 'ap-guangzhou',
-    SecretId: '',
-    SecretKey: '',
+    SecretId: 'Please input SecretId',
+    SecretKey: 'Please input SecretKey',
     ServiceType: 'tmt',
     Version: '2018-03-21',
   });
@@ -19,8 +19,8 @@ async function main() {
         RequestClient: 'TENCENT_SDK_CAPI',
       },
       {
-        debug: true,
         isV3: false,
+        debug: true,
         host: 'tmt.tencentcloudapi.com',
       },
     );
@@ -35,8 +35,8 @@ async function main() {
         ProjectId: 0,
       },
       {
-        debug: true,
         isV3: true,
+        debug: true,
         host: 'tmt.tencentcloudapi.com',
       },
     );

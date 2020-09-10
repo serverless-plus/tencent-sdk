@@ -266,10 +266,10 @@ export function tencentSignV1(
   const Nonce = Math.round(Math.random() * 65535);
 
   payload.Region = options.Region;
-  payload.Version = payload.Version || options.Version;
   payload.Nonce = Nonce;
   payload.Timestamp = Timestamp;
   payload.SecretId = options.SecretId;
+  payload.Version = payload.Version || options.Version;
   payload.RequestClient =
     options.RequestClient || payload.RequestClient || '@tencent-sdk/capi';
 
@@ -318,55 +318,4 @@ export function tencentSignV1(
     method,
     payload,
   };
-}
-
-'use strict';
-
-function stringifyPrimitive(v: any): string | number {
-  switch (typeof v) {
-    case 'string':
-      return v;
-
-    case 'boolean':
-      return v ? 'true' : 'false';
-
-    case 'number':
-      return isFinite(v) ? v : '';
-
-    default:
-      return '';
-  }
-}
-
-export function stringify(obj: any, sep?: string, eq?: string, name?: any) {
-  sep = sep || '&';
-  eq = eq || '=';
-  if (obj === null) {
-    obj = undefined;
-  }
-
-  if (typeof obj === 'object') {
-    return Object.keys(obj)
-      .map(function(k) {
-        const ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
-        if (Array.isArray(obj[k])) {
-          return obj[k]
-            .map(function(v: any) {
-              return ks + encodeURIComponent(stringifyPrimitive(v));
-            })
-            .join(sep);
-        } else {
-          return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
-        }
-      })
-      .filter(Boolean)
-      .join(sep);
-  }
-
-  if (!name) return '';
-  return (
-    encodeURIComponent(stringifyPrimitive(name)) +
-    eq +
-    encodeURIComponent(stringifyPrimitive(obj))
-  );
 }

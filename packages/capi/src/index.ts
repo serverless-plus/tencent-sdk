@@ -1,7 +1,5 @@
 import * as rp from 'request-promise-native';
-import assign from 'object-assign';
-import qs from 'querystring';
-import { logger, tencentSign, tencentSignV1 } from './utils';
+import { logger, tencentSign, tencentSignV1, querystring } from './utils';
 
 export { tencentSign, tencentSignV1 } from './utils';
 
@@ -66,7 +64,7 @@ export class Capi implements CapiInstance {
   };
 
   constructor(options: CapiOptions) {
-    this.options = assign(this.defaultOptions, options);
+    this.options = Object.assign(this.defaultOptions, options);
   }
 
   request(
@@ -74,7 +72,7 @@ export class Capi implements CapiInstance {
     opts: RequestOptions = this.defaultOptions,
     isV3 = false,
   ) {
-    const options = assign(this.options, opts);
+    const options = Object.assign(this.options, opts);
     const { Action, Version, ...restData } = data;
     let reqOption = {
       url: '',
@@ -127,7 +125,7 @@ export class Capi implements CapiInstance {
       if (method === 'POST') {
         reqOption.form = payload;
       } else {
-        reqOption.url += '?' + qs.stringify(payload);
+        reqOption.url += '?' + querystring(payload);
       }
     }
 

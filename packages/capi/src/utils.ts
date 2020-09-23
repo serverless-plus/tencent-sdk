@@ -319,3 +319,49 @@ export function tencentSignV1(
     payload,
   };
 }
+
+function stringifyPrimitive(v: any) {
+  switch (typeof v) {
+    case 'string':
+      return v;
+
+    case 'boolean':
+      return v ? 'true' : 'false';
+
+    case 'number':
+      return isFinite(v) ? v : '';
+
+    default:
+      return '';
+  }
+}
+interface ParsedUrlQueryInput {
+  [key: string]: NodeJS.PoorMansUnknown;
+}
+
+export function querystring(obj?: ParsedUrlQueryInput): string {
+  const sep = '&';
+  const eq = '=';
+
+  if (!obj) return '';
+
+  if (obj && typeof obj === 'object') {
+    return Object.keys(obj)
+      .map(function(k) {
+        let ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
+        if (Array.isArray(obj[k])) {
+          return (obj[k] as Array<any>)
+            .map(function(v) {
+              return ks + encodeURIComponent(stringifyPrimitive(v));
+            })
+            .join(sep);
+        } else {
+          return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
+        }
+      })
+      .filter(Boolean)
+      .join(sep);
+  }
+
+  return '';
+}

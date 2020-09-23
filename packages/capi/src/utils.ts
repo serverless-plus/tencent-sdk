@@ -271,7 +271,7 @@ export function tencentSignV1(
   payload.SecretId = options.SecretId;
   payload.Version = payload.Version || options.Version;
   payload.RequestClient =
-    options.RequestClient || payload.RequestClient || '@tencent-sdk/capi';
+    options.RequestClient || payload.RequestClient || 'tencent_sdk_capi';
 
   if (options.Token) {
     payload.Token = options.Token;

@@ -55,7 +55,7 @@ export class Capi implements CapiInstance {
     path: '/', // api request path
     method: 'POST',
     protocol: 'https',
-    baseHost: 'api.qcloud.com',
+    baseHost: 'tencentcloudapi.com',
     ServiceType: '',
     SecretId: '',
     SecretKey: '',
@@ -73,6 +73,8 @@ export class Capi implements CapiInstance {
     isV3 = false,
   ) {
     const options = Object.assign(this.options, opts);
+    options.RequestClient =
+      options.RequestClient || data.RequestClient || 'TENCENT_SDK_CAPI';
     const { Action, Version, ...restData } = data;
     let reqOption = {
       url: '',
@@ -101,17 +103,12 @@ export class Capi implements CapiInstance {
         },
         body: payload,
       };
-      if (this.options.Token) {
-        if (!reqOption.headers) {
-          reqOption.headers = {};
-        }
-        reqOption.headers['X-TC-Token'] = this.options.Token;
+      if (!reqOption.headers) {
+        reqOption.headers = {};
       }
-      if (opts.RequestClient) {
-        if (!reqOption.headers) {
-          reqOption.headers = {};
-        }
-        reqOption.headers['X-TC-RequestClient'] = opts.RequestClient;
+      reqOption.headers['X-TC-RequestClient'] = options.RequestClient;
+      if (this.options.Token) {
+        reqOption.headers['X-TC-Token'] = this.options.Token;
       }
     } else {
       const { url, method, payload } = tencentSignV1(data, options);

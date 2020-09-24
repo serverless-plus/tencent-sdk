@@ -21,7 +21,6 @@ async function main() {
       {
         isV3: false,
         debug: true,
-        host: 'tmt.tencentcloudapi.com',
       },
     );
     console.log('V1 Sign Result: ', res1);
@@ -37,7 +36,6 @@ async function main() {
       {
         isV3: true,
         debug: true,
-        host: 'tmt.tencentcloudapi.com',
       },
     );
     console.log('V3 Sign Result: ', res2);

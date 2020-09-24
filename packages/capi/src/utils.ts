@@ -335,7 +335,7 @@ function stringifyPrimitive(v: any) {
   }
 }
 interface ParsedUrlQueryInput {
-  [key: string]: NodeJS.PoorMansUnknown;
+  [key: string]: any;
 }
 
 export function querystring(obj?: ParsedUrlQueryInput): string {

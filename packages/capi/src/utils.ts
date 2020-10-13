@@ -52,9 +52,9 @@ export function getUnixTime(date: Date) {
 }
 
 export function getDate(date: Date) {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth() + 1;
+  const day = date.getUTCDate();
   return `${year}-${month > 9 ? month : `0${month}`}-${
     day > 9 ? day : `0${day}`
   }`;

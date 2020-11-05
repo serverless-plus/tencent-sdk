@@ -1,6 +1,6 @@
 {
   "name": "@tencent-sdk/login",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Tencent cloud serverlerss login sdk",
   "main": "dist/index.js",
   "node": "dist/index.js",

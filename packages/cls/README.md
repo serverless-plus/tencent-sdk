@@ -1,6 +1,6 @@
-## Tencent CLS SDK
+## Tencent Cloud CLS SDK
 
-This is a SDK tool for tencent cloud CLS service.
+This is a SDK tool for [Tencent Cloud CLS](https://console.cloud.tencent.com/cls) service.
 
 ## Usage
 
@@ -145,7 +145,7 @@ const res = await client.getIndex({
 
 ### Custom methods
 
-If you need method expect above list, you can use `client.request()` like below:
+If you need methods expect above list, you can use `client.request()` like below:
 
 ```js
 // create cls shipper

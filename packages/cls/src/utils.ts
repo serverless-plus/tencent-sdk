@@ -283,7 +283,7 @@ export function tencentSign({
   expire,
 }: GenerateSignatureOptions): string {
   let now = Math.floor(Date.now() / 1000);
-  const exp = now + expire;
+  const exp = now + Math.floor(expire / 1000);
   now = now - 60;
 
   // api only support sha1

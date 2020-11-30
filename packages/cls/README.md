@@ -8,7 +8,7 @@ This is a SDK tool for tencent cloud CLS service.
 You can use it like below:
 
 ```js
-import { Cls } from '@tencent-sdk/capi';
+import { Cls } from '@tencent-sdk/cls';
 
 const client = new Cls({
   region: 'ap-guangzhou',

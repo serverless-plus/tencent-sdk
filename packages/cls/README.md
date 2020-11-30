@@ -19,8 +19,6 @@ const client = new Cls({
 });
 ```
 
-> This is a demo for using create logset.
-
 Support methods:
 
 - [getLogsetList()](#getLogsetList)
@@ -147,7 +145,7 @@ const res = await client.getIndex({
 
 ### Custom methods
 
-If you need method expect above list, you can use `client.request()` method to parse your custom methods, like below:
+If you need method expect above list, you can use `client.request()` like below:
 
 ```js
 // create cls shipper

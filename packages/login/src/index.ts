@@ -1,7 +1,7 @@
 import axios from 'axios';
-import os from 'os';
+import { type } from 'os';
 import { v4 as uuidv4 } from 'uuid';
-import qrcode from 'qrcode';
+import * as qrcode from 'qrcode';
 import { sleep, waitResponse } from '@ygkit/request';
 import { API_BASE_URL, API_SHORT_URL, REFRESH_TOKEN_URL } from './constant';
 
@@ -70,7 +70,7 @@ export class TencentLogin {
    * @param uuid uuid
    */
   async getShortUrl(uuid: string): Promise<Boolean | any> {
-    const url = `${API_SHORT_URL}?os=${os.type()}&uuid=${uuid}`;
+    const url = `${API_SHORT_URL}?os=${type()}&uuid=${uuid}`;
     return this.getRequest(url);
   }
 
@@ -107,7 +107,7 @@ export class TencentLogin {
     signature: string,
     appid: number | string,
   ): Promise<Boolean | any> {
-    const url = `${REFRESH_TOKEN_URL}?uuid=${uuid}&os=${os.type()}&expired=${expired}&signature=${signature}&appid=${appid}`;
+    const url = `${REFRESH_TOKEN_URL}?uuid=${uuid}&os=${type()}&expired=${expired}&signature=${signature}&appid=${appid}`;
     return this.getRequest(url);
   }
 

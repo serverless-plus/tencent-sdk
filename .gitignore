@@ -5,7 +5,7 @@ yarn-error.log
 dist
 includes
 tsconfig.tsbuildinfo
-.env
+.env*
 coverage
 yarn.lock
 .rpt2_cache

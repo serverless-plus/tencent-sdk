@@ -3,10 +3,10 @@
   "private": true,
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "bundle": "ts-node -P scripts/tsconfig.json scripts/bundle.ts umd,esm",
+    "build": "ts-node -P scripts/tsconfig.json scripts/bundle.ts umd,esm",
     "test": "jest",
     "clean": "lerna clean --yes && lerna run clean",
-    "release": "yarn run bundle && lerna publish --exact",
+    "release": "yarn run build && lerna publish --exact",
     "prettier": "prettier --check '**/*.{ts,tsx,md}' --config .prettierrc",
     "prettier:fix": "prettier --write '**/*.{ts,tsx,md}' --config .prettierrc"
   },

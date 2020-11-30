@@ -13,7 +13,6 @@
     "access": "public"
   },
   "scripts": {
-    "test": "ts-node test/index.spec.ts",
     "clean": "rimraf ./dist tsconfig.tsbuildinfo"
   },
   "keywords": [

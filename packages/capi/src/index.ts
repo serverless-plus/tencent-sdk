@@ -1,5 +1,7 @@
-import * as rp from 'request-promise-native';
 import { logger, tencentSign, tencentSignV1, querystring } from './utils';
+import { Options } from 'request-promise-native';
+
+const rp = require('request-promise-native');
 
 export { tencentSign, tencentSignV1 } from './utils';
 
@@ -76,12 +78,12 @@ export class Capi implements CapiInstance {
     options.RequestClient =
       options.RequestClient || data.RequestClient || 'TENCENT_SDK_CAPI';
     const { Action, Version, ...restData } = data;
-    let reqOption = {
+    let reqOption: Options = {
       url: '',
       method: '',
       json: true,
       strictSSL: false,
-    } as rp.Options;
+    };
     if (isV3 || opts.isV3) {
       const { url, payload, Authorization, Timestamp, Host } = tencentSign(
         restData,
@@ -134,6 +136,6 @@ export class Capi implements CapiInstance {
       logger('Request Option', JSON.stringify(reqOption));
     }
 
-    return rp.default(reqOption);
+    return rp(reqOption);
   }
 }

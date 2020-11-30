@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import { createHash, createHmac } from 'crypto';
 import { CapiOptions } from './index';
 
 export interface Payload {
@@ -23,7 +23,7 @@ export interface TencentSignResult {
   payload: Payload;
   Host: string;
   Authorization: string;
-  Timestamp: number | string;
+  Timestamp: string | string[] | undefined;
 }
 
 export interface TencentSignResultV1 {
@@ -61,7 +61,6 @@ export function getDate(date: Date) {
 }
 
 export function getUrl(opts: HostParams, isV1 = false) {
-  opts = opts || {};
   const host = getHost(opts, isV1);
   const path = opts.path || '/';
 
@@ -73,7 +72,7 @@ export function sign(
   secretKey: Buffer,
   algorithm: string = 'sha256',
 ): Buffer {
-  const hmac = crypto.createHmac(algorithm, secretKey);
+  const hmac = createHmac(algorithm, secretKey);
   return hmac.update(Buffer.from(str, 'utf8')).digest();
 }
 
@@ -195,7 +194,7 @@ export function tencentSign(
   const url = getUrl(hostParams);
   const Host = getHost(hostParams);
   const d = new Date();
-  const Timestamp = getUnixTime(d);
+  const Timestamp = String(getUnixTime(d));
   const date = getDate(d);
   const Algorithm = 'TC3-HMAC-SHA256';
 
@@ -205,16 +204,14 @@ export function tencentSign(
   const CanonicalQueryString = '';
   const CanonicalHeaders = `content-type:application/json\nhost:${Host}\n`;
   const SignedHeaders = 'content-type;host';
-  const HashedRequestPayload = crypto
-    .createHash('sha256')
+  const HashedRequestPayload = createHash('sha256')
     .update(JSON.stringify(payload))
     .digest('hex');
   const CanonicalRequest = `${HTTPRequestMethod}\n${CanonicalURI}\n${CanonicalQueryString}\n${CanonicalHeaders}\n${SignedHeaders}\n${HashedRequestPayload}`;
 
   // 2. create string to sign
   const CredentialScope = `${date}/${options.ServiceType}/tc3_request`;
-  const HashedCanonicalRequest = crypto
-    .createHash('sha256')
+  const HashedCanonicalRequest = createHash('sha256')
     .update(CanonicalRequest)
     .digest('hex');
   const StringToSign = `${Algorithm}\n${Timestamp}\n${CredentialScope}\n${HashedCanonicalRequest}`;
@@ -223,8 +220,7 @@ export function tencentSign(
   const SecretDate = sign(date, Buffer.from(`TC3${options.SecretKey}`, 'utf8'));
   const SecretService = sign(options.ServiceType, SecretDate);
   const SecretSigning = sign('tc3_request', SecretService);
-  const Signature = crypto
-    .createHmac('sha256', SecretSigning)
+  const Signature = createHmac('sha256', SecretSigning)
     .update(Buffer.from(StringToSign, 'utf8'))
     .digest('hex');
 

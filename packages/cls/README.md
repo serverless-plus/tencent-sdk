@@ -193,7 +193,7 @@ const client = new Cls(ClsOptions);
 | token     | tencent account token                | string  | false    | ''           |
 | debug     | whether enable log debug info        | boolean | false    | false        |
 | timeout   | request timeout, unit `ms`           | number  | false    | 5000         |
-| expire    | expire time for signature, unit `ms` | number  | false    | 300          |
+| expire    | expire time for signature, unit `ms` | number  | false    | 300000       |
 
 ## License
 

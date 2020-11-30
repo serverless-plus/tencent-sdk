@@ -188,7 +188,7 @@ export class Cls {
     const authorization = tencentSign({
       secretId: options.secretId,
       secretKey: options.secretKey,
-      // default 5 seconds
+      // default 5 minutes
       expire: options.expire || 300000,
       method,
       path,

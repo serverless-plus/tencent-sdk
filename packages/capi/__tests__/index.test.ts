@@ -5,33 +5,27 @@ describe('Capi', () => {
     Region: 'ap-guangzhou',
     SecretId: process.env.TENCENT_SECRET_ID,
     SecretKey: process.env.TENCENT_SECRET_KEY,
-    ServiceType: 'tmt',
-    Version: '2018-03-21',
+    Token: process.env.TENCENT_TOKEN,
+    ServiceType: 'scf',
+    Version: '2018-04-16',
   });
 
   test('[v1] should get api result success', async () => {
     const res = await client.request(
       {
-        Action: 'TextTranslate',
-        SourceText: 'hello',
-        Source: 'auto',
-        Target: 'zh',
-        ProjectId: 0,
-        RequestClient: 'TENCENT_SDK_CAPI',
+        Action: 'ListFunctions',
       },
       {
         isV3: false,
         debug: true,
       },
     );
-    console.log('v1', res);
 
     expect(res).toEqual({
       Response: {
+        Functions: expect.any(Array),
+        TotalCount: expect.any(Number),
         RequestId: expect.any(String),
-        Source: 'en',
-        Target: 'zh',
-        TargetText: '你好',
       },
     });
   });
@@ -39,11 +33,7 @@ describe('Capi', () => {
   test('[v3] should get api result success', async () => {
     const res = await client.request(
       {
-        Action: 'TextTranslate',
-        SourceText: 'hello',
-        Source: 'auto',
-        Target: 'zh',
-        ProjectId: 0,
+        Action: 'ListFunctions',
       },
       {
         isV3: true,
@@ -53,10 +43,9 @@ describe('Capi', () => {
 
     expect(res).toEqual({
       Response: {
+        Functions: expect.any(Array),
+        TotalCount: expect.any(Number),
         RequestId: expect.any(String),
-        Source: 'en',
-        Target: 'zh',
-        TargetText: '你好',
       },
     });
   });

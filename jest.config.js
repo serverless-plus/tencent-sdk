@@ -11,8 +11,7 @@ const config = {
   },
   testTimeout: 60000,
   testEnvironment: 'node',
-  // testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$',
-  testRegex: '(/packages/cls/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$',
+  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$',
   testPathIgnorePatterns: ['/node_modules/', '/dist/', '/__tests__/fixtures/'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };

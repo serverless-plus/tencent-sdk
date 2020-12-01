@@ -5,7 +5,8 @@ describe('Cls', () => {
     region: 'ap-guangzhou',
     secretId: process.env.TENCENT_SECRET_ID,
     secretKey: process.env.TENCENT_SECRET_KEY,
-    debug: false,
+    token: process.env.TENCENT_TOKEN,
+    debug: true,
   });
 
   let logset_id;
@@ -17,6 +18,7 @@ describe('Cls', () => {
       period: 7,
     });
     expect(res).toEqual({
+      requestId: expect.any(String),
       logset_id: expect.any(String),
     });
 
@@ -28,6 +30,7 @@ describe('Cls', () => {
       logset_id,
     });
     expect(res).toEqual({
+      requestId: expect.any(String),
       create_time: expect.any(String),
       logset_id: logset_id,
       logset_name: 'cls-test',
@@ -41,6 +44,7 @@ describe('Cls', () => {
   test('get logset list', async () => {
     const res = await client.getLogsetList();
     expect(res).toEqual({
+      requestId: expect.any(String),
       logsets: expect.any(Array),
     });
 
@@ -60,6 +64,7 @@ describe('Cls', () => {
       topic_name: 'cls-test-topic',
     });
     expect(res).toEqual({
+      requestId: expect.any(String),
       topic_id: expect.any(String),
     });
 
@@ -71,6 +76,7 @@ describe('Cls', () => {
       topic_id,
     });
     expect(res).toEqual({
+      requestId: expect.any(String),
       ExcludePaths: [],
       collection: true,
       create_time: expect.any(String),
@@ -109,6 +115,7 @@ describe('Cls', () => {
     });
 
     expect(res).toEqual({
+      requestId: expect.any(String),
       success: true,
     });
   });
@@ -119,6 +126,7 @@ describe('Cls', () => {
     });
 
     expect(res).toEqual({
+      requestId: expect.any(String),
       effective: true,
       rule: {
         full_text: {
@@ -142,6 +150,7 @@ describe('Cls', () => {
       topic_id,
     });
     expect(res).toEqual({
+      requestId: expect.any(String),
       success: true,
     });
   });
@@ -151,6 +160,7 @@ describe('Cls', () => {
       logset_id,
     });
     expect(res).toEqual({
+      requestId: expect.any(String),
       success: true,
     });
   });

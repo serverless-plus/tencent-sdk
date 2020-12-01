@@ -17,7 +17,7 @@ export class Cls {
     this.options = options;
 
     this.options.region = this.options.region || 'ap-guangzhou';
-    this.options.expire = this.options.expire || 300;
+    this.options.expire = this.options.expire || 300000;
   }
 
   /**
@@ -219,7 +219,7 @@ export class Cls {
       if (!reqOption.headers) {
         reqOption.headers = {};
       }
-      reqOption.headers['x-cls-token'] = this.options.token;
+      reqOption.headers['x-cls-token'] = options.token;
     }
     if (options.timeout) {
       reqOption.timeout = options.timeout;
@@ -230,17 +230,26 @@ export class Cls {
     }
 
     try {
-      const res = (await got(reqOption)) as Response;
-      if (!res.body) {
-        res.body = {
-          success: res.statusCode === 200,
+      const { headers, body, statusCode } = (await got(
+        reqOption,
+      )) as ApiResponse;
+      const reqId = headers && headers['x-cls-requestid'];
+      if (!body) {
+        return {
+          requestId: reqId,
+          success: statusCode === 200,
         };
       }
-      return res.body as ApiResponse;
+      body.requestId = reqId;
+      return body as ApiResponse;
     } catch (e) {
+      const response = e.response || {};
+      const reqId = response.headers && response.headers['x-cls-requestid'];
+
       return {
+        requestId: reqId,
         error: {
-          message: e.message,
+          message: reqId ? `${e.message} (reqId: ${reqId})` : e.message,
         },
       };
     }

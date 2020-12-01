@@ -1,4 +1,4 @@
-import got, { Options, Response } from 'got';
+import got, { Options } from 'got';
 import { logger, tencentSign, querystring } from './utils';
 import {
   ClsOptions,

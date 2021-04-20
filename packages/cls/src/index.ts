@@ -6,6 +6,7 @@ import {
   CreateTopicData,
   UpdateTopicData,
   UpdateIndexData,
+  SearchLogData,
   RequestOptions,
 } from './typings';
 
@@ -177,6 +178,16 @@ export class Cls {
     return res;
   }
 
+  async searchLog(data: SearchLogData): Promise<ApiResponse> {
+    const res = await this.request({
+      method: 'GET',
+      path: '/searchlog',
+      data,
+    });
+
+    return res;
+  }
+
   async request({
     method,
     path,
@@ -184,7 +195,7 @@ export class Cls {
     data,
   }: RequestOptions): Promise<ApiResponse> {
     const { options } = this;
-    const host = `${options.region}.cls.myqcloud.com`;
+    const host = `${options.region}.cls.tencentyun.com`;
     const authorization = tencentSign({
       secretId: options.secretId,
       secretKey: options.secretKey,

@@ -104,3 +104,29 @@ export interface UpdateIndexData {
   // 索引规则，当 effective 为 true 时必需
   rule?: IndexRule;
 }
+
+export interface SearchLogData {
+  // 要查询的 logset ID
+  logset_id: string;
+
+  // 要查询的 topic ID
+  topic_ids: string;
+
+  // 要查询的日志的起始时间，格式 YYYY-mm-dd HH:MM:SS
+  start_time: string;
+
+  // 要查询的日志的结束时间，格式 YYYY-mm-dd HH:MM:SS
+  end_time: string;
+
+  // 查询语句，详情参考 检索语法与规则
+  query_string: string;
+
+  // 单次要返回的日志条数，单次返回的最大条数为100
+  limit: number;
+
+  // 加载更多使用，透传上次返回的 context 值，获取后续的日志内容，通过游标最多可获取10000条，请尽可能缩小时间范围
+  context: string;
+
+  // 按时间排序 asc（升序）或者 desc（降序），默认为 desc
+  sort: string;
+}

@@ -1,6 +1,6 @@
 {
   "name": "@tencent-sdk/cls",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Tencent cloud cls sdk",
   "main": "dist/index.js",
   "node": "dist/index.js",

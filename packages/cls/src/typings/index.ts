@@ -125,8 +125,8 @@ export interface SearchLogData {
   limit: number;
 
   // 加载更多使用，透传上次返回的 context 值，获取后续的日志内容，通过游标最多可获取10000条，请尽可能缩小时间范围
-  context: string;
+  context?: string;
 
   // 按时间排序 asc（升序）或者 desc（降序），默认为 desc
-  sort: string;
+  sort?: string;
 }

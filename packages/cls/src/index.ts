@@ -182,7 +182,7 @@ export class Cls {
     const res = await this.request({
       method: 'GET',
       path: '/searchlog',
-      data,
+      query: data,
     });
 
     return res;

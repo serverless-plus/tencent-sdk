@@ -159,7 +159,7 @@ function stringifyPrimitive(v: any) {
   }
 }
 
-function safeUrlEncode(str: string) {
+function safeUrlEncode(str: string | number | boolean) {
   return encodeURIComponent(str)
     .replace(/!/g, '%21')
     .replace(/'/g, '%27')
@@ -181,15 +181,15 @@ export function querystring(obj?: ParsedUrlQueryInput): string {
   if (obj && typeof obj === 'object') {
     return Object.keys(obj)
       .map(function(k) {
-        let ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
+        let ks = safeUrlEncode(stringifyPrimitive(k)) + eq;
         if (Array.isArray(obj[k])) {
           return (obj[k] as Array<any>)
             .map(function(v) {
-              return ks + encodeURIComponent(stringifyPrimitive(v));
+              return ks + safeUrlEncode(stringifyPrimitive(v));
             })
             .join(sep);
         } else {
-          return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
+          return ks + safeUrlEncode(stringifyPrimitive(obj[k]));
         }
       })
       .filter(Boolean)

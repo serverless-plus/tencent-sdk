@@ -1,5 +1,4 @@
 import { Method } from 'got';
-
 export interface AnyObject {
   [prop: string]: any;
 }
@@ -12,7 +11,7 @@ export interface ClsOptions {
   token?: string; // tencent account token
   debug?: boolean; // whether enable log debug info
   timeout?: number; // request timeout in miliseconds
-  expire?: number;
+  expire?: number; // sign expire time in miliseconds
 }
 
 export interface RequestOptions {

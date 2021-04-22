@@ -5,6 +5,7 @@ export interface AnyObject {
 }
 
 export interface ClsOptions {
+  baseHost?: string; // base host
   region: string; // request region, default: ap-guangzhou
   secretId: string; // tencent account secret id
   secretKey: string; // tencent account secret key

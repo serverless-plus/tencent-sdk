@@ -195,7 +195,8 @@ export class Cls {
     data,
   }: RequestOptions): Promise<ApiResponse> {
     const { options } = this;
-    const host = `${options.region}.cls.myqcloud.com`;
+    const baseHost = options.baseHost || 'cls.tencentcs.com';
+    const host = `${options.region}.${baseHost}`;
     const authorization = tencentSign({
       secretId: options.secretId,
       secretKey: options.secretKey,

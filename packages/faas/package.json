@@ -1,0 +1,37 @@
+{
+  "name": "@tencent-sdk/faas",
+  "version": "0.0.0",
+  "description": "Tencent cloud faas sdk",
+  "main": "dist/index.js",
+  "node": "dist/index.js",
+  "browser": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "jsnext:main": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "ts-node test/index.test.ts",
+    "clean": "rimraf ./dist tsconfig.tsbuildinfo"
+  },
+  "keywords": [
+    "tencent-cloud",
+    "faas",
+    "scf"
+  ],
+  "author": "yugasun",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yugasun/tencent-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yugasun/tencent-sdk/issues"
+  },
+  "homepage": "https://github.com/yugasun/tencent-sdk#readme",
+  "dependencies": {
+    "@tencent-sdk/capi": "^1.1.8"
+  }
+}

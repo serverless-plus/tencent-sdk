@@ -12,14 +12,13 @@ describe('FaaS', () => {
     topicId: '34e08a87-95b0-4f8d-85c7-a823c5f630e9',
   };
   let reqId = '';
-  const faas = new FaaS(
-    {
-      secretId: process.env.TENCENT_SECRET_ID,
-      secretKey: process.env.TENCENT_SECRET_KEY,
-      token: process.env.TENCENT_TOKEN,
-    },
+  const faas = new FaaS({
+    secretId: process.env.TENCENT_SECRET_ID,
+    secretKey: process.env.TENCENT_SECRET_KEY,
+    token: process.env.TENCENT_TOKEN,
     region,
-  );
+    debug: true,
+  });
 
   test('getRegion', async () => {
     const region = faas.getRegion();

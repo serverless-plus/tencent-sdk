@@ -21,7 +21,6 @@ const ACTIONS = [
 export type ActionType = typeof ACTIONS[number];
 
 const APIS = ApiFactory({
-  debug: false,
   serviceType: ServiceType.faas,
   version: '2018-04-16',
   actions: ACTIONS,

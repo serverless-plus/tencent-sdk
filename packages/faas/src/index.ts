@@ -11,8 +11,10 @@ import APIS, { ActionType } from './apis';
 import { getSearchSql } from './utils';
 import {
   Credentials,
+  FaasOptions,
   FaasBaseConfig,
   FunctionInfo,
+  GetFaasOptions,
   GetLogOptions,
   GetLogDetailOptions,
   ClsConfig,
@@ -34,23 +36,34 @@ export class FaaS {
   cls: Cls;
   clsConfigCache: { [prop: string]: { logsetId: string; topicId: string } };
 
-  constructor(credentials: Credentials, region: string = 'ap-guangzhou') {
-    this.credentials = credentials;
+  constructor({
+    secretId,
+    secretKey,
+    token,
+    region = 'ap-guangzhou',
+    debug = false,
+  }: FaasOptions) {
+    this.credentials = {
+      secretId,
+      secretKey,
+      token,
+    };
     this.region = region;
     this.capi = new Capi({
+      debug,
       Region: region,
       ServiceType: ServiceType.faas,
-      SecretId: credentials.secretId,
-      SecretKey: credentials.secretKey,
-      Token: this.credentials.token,
+      SecretId: secretId,
+      SecretKey: secretKey,
+      Token: token,
     });
 
     this.cls = new Cls({
+      debug,
       region: this.region,
-      secretId: credentials.secretId,
-      secretKey: credentials.secretKey,
-      token: credentials.token,
-      debug: false,
+      secretId: secretId,
+      secretKey: secretKey,
+      token: token,
     });
 
     // 函数 CLS 配置缓存
@@ -59,9 +72,9 @@ export class FaaS {
 
   /**
    * 设置当前地域
-   * @param region 地区
+   * @param {string} region 地区
    */
-  setRegion(region: string) {
+  setRegion(region: string): void {
     this.region = region;
     this.capi.options.Region = region;
     this.cls.options.region = region;
@@ -69,7 +82,7 @@ export class FaaS {
 
   /**
    * 获取当前地域
-   * @returns 地域
+   * @returns {string} 地域
    */
   getRegion() {
     return this.region;
@@ -88,8 +101,8 @@ export class FaaS {
 
   /**
    *  获取 faas 详情
-   * @param param0
-   * @returns FunctionInfo | null
+   * @param {GetFaasOptions} options 参数
+   * @returns {Promise<FunctionInfo | null>} 函数详情，如果不存在则返回 null
    */
   async get({
     name,
@@ -97,12 +110,7 @@ export class FaaS {
     qualifier = '$LATEST',
     showCode = false,
     showTriggers = false,
-  }: {
-    // 是否需要获取函数代码，默认设置为 false，提高查询效率
-    showCode?: boolean;
-    // 是否需要获取函数触发器，默认设置为 false，提高查询效率
-    showTriggers?: boolean;
-  } & FaasBaseConfig): Promise<FunctionInfo | null> {
+  }: GetFaasOptions): Promise<FunctionInfo | null> {
     try {
       const Response = await this.request({
         Action: 'GetFunction',
@@ -130,6 +138,11 @@ export class FaaS {
     }
   }
 
+  /**
+   * 调用函数
+   * @param {InvokeOptions} options 参数
+   * @returns {Promise<InvokeResult>} 函数执行结果
+   */
   async invoke({
     name,
     namespace = 'default',
@@ -153,8 +166,8 @@ export class FaaS {
 
   /**
    * 获取 faas 的 CLS 配置
-   * @param FaasBaseConfig faas 基本配置
-   * @returns ClsConfig
+   * @param {FaasBaseConfig} options 参数
+   * @returns {Promise<ClsConfig>} 函数 CLS 配置
    */
   async getClsConfig({
     name,
@@ -186,6 +199,11 @@ export class FaaS {
     };
   }
 
+  /**
+   * 获取函数日志列表，默认 近1个小时
+   * @param {GetLogOptions} options 参数
+   * @returns {Promise<SearchLogItem[]>} 日志列表
+   */
   async getLogList({
     name,
     namespace,
@@ -273,6 +291,12 @@ export class FaaS {
     }
     return logs;
   }
+
+  /**
+   * 获取请求 ID日志详情，包含多条日志（流式日志），需要自定义拼接
+   * @param {GetLogDetailOptions} options 参数
+   * @returns {Promise<SearchLogDetailItem[]>} 日志详情列表
+   */
   async getLogDetail({
     startTime,
     logsetId,
@@ -301,6 +325,11 @@ export class FaaS {
     return results;
   }
 
+  /**
+   * 通过请求 ID 获取日志详情
+   * @param {GetLogOptions} options 参数
+   * @returns {Promise<SearchLogItem>} 单条日志详情
+   */
   async getLogByReqId({
     name,
     namespace,

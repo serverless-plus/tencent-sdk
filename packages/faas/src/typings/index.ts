@@ -2,47 +2,88 @@ export interface AnyObject {
   [prop: string]: any;
 }
 
+export type GetFaasOptions = {
+  // 是否需要获取函数代码，默认设置为 false，提高查询效率
+  showCode?: boolean;
+  // 是否需要获取函数触发器，默认设置为 false，提高查询效率
+  showTriggers?: boolean;
+} & FaasBaseConfig;
+
 export interface FaasBaseConfig {
+  // 函数名称
   name: string;
+  // 命名空间
   namespace?: string;
+  // 版本
   qualifier?: string;
 }
 
 export interface Credentials {
+  // secret id
   secretId: string;
+  // secret key
   secretKey: string;
+  // 临时 token
   token?: string;
 }
 
+export type FaasOptions = {
+  region?: string;
+  debug?: boolean;
+} & Credentials;
+
 export interface Tag {
+  // 键
   Key: string;
+  // 值
   Value: string;
 }
 
 export interface FunctionInfo {
+  // 函数名称
   FunctionName: string;
+  // 命名空间
   Namespace: string;
+  // 超时时间
   Timeout: number;
+  // 内存
   MemorySize: number;
+  // 执行方法
   Handler: string;
+  // 运行环境
   Runtime: string;
+  // 状态
   Status: string;
+  // 最新版本
   LastVersion: string;
+  // 异常原因
   StatusReasons: { ErrorMessage: string }[];
+  // 流量
   Traffic?: number;
+  // 配置流量版本
   ConfigTrafficVersion?: string;
+  // 标签
   Tags: Tag[];
+  // 日志集ID
   ClsLogsetId: string;
+  // 日志主题ID
   ClsTopicId: string;
 }
 
 export interface StatusSqlMap {
+  // 成功
   success: string;
+  // 失败
   fail: string;
+  // 重试
   retry: string;
+  // 调用中断
   interrupt: string;
+  // 超时超时
   timeout: string;
+  // 调用超时
   exceed: string;
+  // 代码异常
   codeError: string;
 }
 
@@ -63,13 +104,14 @@ export interface GetLogOptions {
   status?: keyof StatusSqlMap | '';
   // 时间间隔，单位秒，默认为 3600s
   interval?: number;
-
   // 获取条数
   limit?: number;
 }
 
 export interface ClsConfig {
+  // 日志集 ID
   logsetId: string;
+  // 日志主题 ID
   topicId: string;
 }
 

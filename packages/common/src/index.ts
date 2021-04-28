@@ -1,6 +1,12 @@
 import { Capi } from '@tencent-sdk/capi';
-import { ApiServiceType } from './constants';
-import { ApiError } from './error';
+import { PascalCasedPropertiesDeep, CamelCasedPropertiesDeep } from 'type-fest';
+import camelCase from 'camelcase';
+
+import { ServiceType } from './constants';
+import { CommonError } from './error';
+
+export * from './constants';
+export * from './error';
 
 /**
  * simple deep clone object
@@ -23,7 +29,7 @@ export function getRealType<T>(obj: T): string {
  * @param obj object
  */
 export function isArray<T>(obj: T[] | T): obj is T[] {
-  return Object.prototype.toString.call(obj) == '[object Array]';
+  return getRealType(obj) === 'Array';
 }
 
 /**
@@ -31,16 +37,16 @@ export function isArray<T>(obj: T[] | T): obj is T[] {
  * @param obj object
  */
 export function isObject<T>(obj: T): obj is T {
-  return obj === Object(obj);
+  return getRealType(obj) === 'Object';
 }
 
-function isEmpty<T>(val: T) {
+export function isEmpty<T>(val: T) {
   return (
     val === undefined || val === null || (typeof val === 'number' && isNaN(val))
   );
 }
 
-function cleanEmptyValue<T>(obj: T): T {
+export function cleanEmptyValue<T>(obj: T): T {
   const newObj: any = {};
   for (const key in obj) {
     const val = obj[key];
@@ -52,7 +58,7 @@ function cleanEmptyValue<T>(obj: T): T {
 }
 
 interface ApiFactoryOptions<ACTIONS_T> {
-  serviceType: ApiServiceType;
+  serviceType: ServiceType;
   version: string;
   actions: ACTIONS_T;
 
@@ -60,6 +66,8 @@ interface ApiFactoryOptions<ACTIONS_T> {
   isV3?: boolean;
   host?: string;
   path?: string;
+  requestClient?: string;
+
   customHandler?: (action: string, res: any) => any;
   responseHandler?: (res: any) => any;
   errorHandler?: (action: string, res: any) => any;
@@ -76,6 +84,8 @@ export function ApiFactory<ACTIONS_T extends readonly string[]>({
   customHandler,
   responseHandler = (res: any) => res,
   errorHandler,
+
+  requestClient = 'TencentSdk',
 }: ApiFactoryOptions<ACTIONS_T>) {
   const APIS: Record<
     ACTIONS_T[number],
@@ -94,7 +104,7 @@ export function ApiFactory<ACTIONS_T extends readonly string[]>({
         const res = await capi.request(reqData, {
           isV3: isV3,
           debug: debug,
-          RequestClient: 'ServerlessComponentV2',
+          RequestClient: requestClient,
           host: host || `${serviceType}.tencentcloudapi.com`,
           path: path || '/',
         });
@@ -107,7 +117,7 @@ export function ApiFactory<ACTIONS_T extends readonly string[]>({
           if (errorHandler) {
             return errorHandler(action, Response);
           }
-          throw new ApiError({
+          throw new CommonError({
             type: `API_${serviceType.toUpperCase()}_${action}`,
             message: `${Response.Error.Message} (reqId: ${Response.RequestId})`,
             reqId: Response.RequestId,
@@ -116,7 +126,7 @@ export function ApiFactory<ACTIONS_T extends readonly string[]>({
         }
         return responseHandler(Response);
       } catch (e) {
-        throw new ApiError({
+        throw new CommonError({
           type: `API_${serviceType.toUpperCase()}_${action}`,
           message: e.message,
           stack: e.stack,
@@ -128,4 +138,35 @@ export function ApiFactory<ACTIONS_T extends readonly string[]>({
   });
 
   return APIS;
+}
+
+export function camelCaseProps<T>(
+  obj: T,
+  pascalCase = false,
+): CamelCasedPropertiesDeep<T> | PascalCasedPropertiesDeep<T> {
+  let res: Record<string, any> = {};
+  if (isObject(obj)) {
+    res = {} as any;
+    Object.keys(obj).forEach((key: string) => {
+      const val = (obj as any)[key];
+      const k = camelCase(key, { pascalCase: pascalCase });
+      res[k] =
+        isObject(val) || isArray(val) ? camelCaseProps(val, pascalCase) : val;
+    });
+  }
+  if (isArray(obj as any)) {
+    res = [];
+    (obj as any).forEach((item: any) => {
+      res.push(
+        isObject(item) || isArray(item)
+          ? camelCaseProps(item, pascalCase)
+          : item,
+      );
+    });
+  }
+  return res as CamelCasedPropertiesDeep<T>;
+}
+
+export function pascalCaseProps<T>(obj: T): PascalCasedPropertiesDeep<T> {
+  return camelCaseProps(obj, true) as PascalCasedPropertiesDeep<T>;
 }

@@ -1,167 +1,95 @@
-import { Cls } from '../src';
+import { FaaS } from '../src';
 
-describe('Cls', () => {
-  const client = new Cls({
-    region: 'ap-guangzhou',
-    secretId: process.env.TENCENT_SECRET_ID,
-    secretKey: process.env.TENCENT_SECRET_KEY,
-    token: process.env.TENCENT_TOKEN,
-    debug: true,
+describe('FaaS', () => {
+  const region = 'ap-guangzhou';
+  const faasConfig = {
+    name: 'serverless-test',
+    namespace: 'default',
+    qualifier: '$LATEST',
+  };
+  const clsConfig = {
+    logsetId: '750b324e-f97a-40e8-9b73-31475c37c02a',
+    topicId: '34e08a87-95b0-4f8d-85c7-a823c5f630e9',
+  };
+  let reqId = '';
+  const faas = new FaaS(
+    {
+      secretId: process.env.TENCENT_SECRET_ID,
+      secretKey: process.env.TENCENT_SECRET_KEY,
+      token: process.env.TENCENT_TOKEN,
+    },
+    region,
+  );
+
+  test('getRegion', async () => {
+    const region = faas.getRegion();
+
+    expect(region).toBe(region);
   });
 
-  let logset_id;
-  let topic_id;
+  test('setRegion', async () => {
+    faas.setRegion('ap-shanghai');
 
-  test('create logset', async () => {
-    const res = await client.createLogset({
-      logset_name: 'cls-test',
-      period: 7,
-    });
-    expect(res).toEqual({
-      requestId: expect.any(String),
-      logset_id: expect.any(String),
-    });
+    expect(faas.getRegion()).toBe('ap-shanghai');
 
-    logset_id = res.logset_id;
+    // 还原为 ap-guangzhou
+    faas.setRegion(region);
   });
 
-  test('get logset', async () => {
-    const res = await client.getLogset({
-      logset_id,
-    });
-    expect(res).toEqual({
-      requestId: expect.any(String),
-      create_time: expect.any(String),
-      logset_id: logset_id,
-      logset_name: 'cls-test',
-      period: 7,
-      topics_number: 0,
-    });
-
-    logset_id = res.logset_id;
-  });
-
-  test('get logset list', async () => {
-    const res = await client.getLogsetList();
-    expect(res).toEqual({
-      requestId: expect.any(String),
-      logsets: expect.any(Array),
-    });
-
-    const [exist] = res.logsets.filter((item) => item.logset_id === logset_id);
-    expect(exist).toEqual({
-      create_time: expect.any(String),
-      logset_id,
-      logset_name: 'cls-test',
-      period: 7,
-      topics_number: 0,
-    });
-  });
-
-  test('create topic', async () => {
-    const res = await client.createTopic({
-      logset_id,
-      topic_name: 'cls-test-topic',
-    });
-    expect(res).toEqual({
-      requestId: expect.any(String),
-      topic_id: expect.any(String),
-    });
-
-    topic_id = res.topic_id;
-  });
-
-  test('get topic', async () => {
-    const res = await client.getTopic({
-      topic_id,
-    });
-    expect(res).toEqual({
-      requestId: expect.any(String),
-      ExcludePaths: [],
-      collection: true,
-      create_time: expect.any(String),
-      extract_rule: { filter_keys: [], filter_regex: [] },
-      index: false,
-      isolated: 0,
-      log_format: '',
-      log_type: 'minimalist_log',
-      logset_id,
-      multi_wild_path: [],
-      partition_count: 1,
-      path: '',
-      shipper: false,
-      sql_flag: true,
-      topic_id,
-      topic_name: 'cls-test-topic',
-    });
-  });
-
-  test('update index', async () => {
-    const res = await client.updateIndex({
-      topic_id,
-      effective: true,
-      rule: {
-        full_text: {
-          case_sensitive: true,
-          tokenizer: '!@#%^&*()_="\', <>/?|\\;:\n\t\r[]{}',
-        },
-        key_value: {
-          case_sensitive: true,
-          keys: ['SCF_RetMsg'],
-          types: ['text'],
-          tokenizers: [' '],
-        },
-      },
+  test('invoke', async () => {
+    const res = await faas.invoke({
+      ...faasConfig,
     });
 
     expect(res).toEqual({
-      requestId: expect.any(String),
-      success: true,
+      billDuration: expect.any(Number),
+      duration: expect.any(Number),
+      errMsg: expect.any(String),
+      memUsage: expect.any(Number),
+      functionRequestId: expect.any(String),
+      invokeResult: expect.any(Number),
+      log: expect.any(String),
+      retMsg: expect.any(String),
     });
   });
 
-  test('get index', async () => {
-    const res = await client.getIndex({
-      topic_id,
+  test('getClsConfig', async () => {
+    const res = await faas.getClsConfig({
+      ...faasConfig,
     });
 
-    expect(res).toEqual({
-      requestId: expect.any(String),
-      effective: true,
-      rule: {
-        full_text: {
-          case_sensitive: true,
-          tokenizer: `!@#%^&*()_="', <>/?|\\;:\n\t\r[]{}`,
-        },
-        key_value: {
-          case_sensitive: true,
-          template_type: 'static',
-          keys: ['SCF_RetMsg'],
-          types: ['text'],
-          tokenizers: [' '],
-        },
-      },
-      topic_id,
-    });
+    expect(res).toEqual(clsConfig);
   });
 
-  test('delete topic', async () => {
-    const res = await client.deleteTopic({
-      topic_id,
+  test('getLogList', async () => {
+    const res = await faas.getLogList({
+      ...faasConfig,
     });
-    expect(res).toEqual({
-      requestId: expect.any(String),
-      success: true,
-    });
+
+    reqId = res[0]!.requestId;
+    expect(res).toBeInstanceOf(Array);
   });
 
-  test('delete logset', async () => {
-    const res = await client.deleteLogset({
-      logset_id,
+  test('getLogDetail', async () => {
+    const res = await faas.getLogDetail({
+      ...faasConfig,
+      ...clsConfig,
+      reqId,
+    });
+    expect(res).toBeInstanceOf(Array);
+  });
+  test('getLogByReqId', async () => {
+    const res = await faas.getLogByReqId({
+      ...faasConfig,
+      reqId,
     });
     expect(res).toEqual({
-      requestId: expect.any(String),
-      success: true,
+      requestId: reqId,
+      retryNum: 0,
+      startTime: expect.any(String),
+      memoryUsage: expect.any(String),
+      duration: expect.any(String),
+      message: expect.any(String),
     });
   });
 });

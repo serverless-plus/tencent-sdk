@@ -32,6 +32,10 @@
   },
   "homepage": "https://github.com/yugasun/tencent-sdk#readme",
   "dependencies": {
-    "@tencent-sdk/capi": "^1.1.8"
+    "@tencent-sdk/capi": "^1.1.8",
+    "@tencent-sdk/cls": "^0.1.13",
+    "@tencent-sdk/common": "^0.0.0",
+    "camelcase": "^6.2.0",
+    "dayjs": "^1.10.4"
   }
 }

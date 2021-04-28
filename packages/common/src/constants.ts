@@ -1,9 +1,10 @@
-export enum ApiServiceType {
+export enum ServiceType {
   /** API 网关服务 (apigateway) */
   apigateway = 'apigateway',
+
   apigw = 'apigw',
   /** 云函数服务 (SCF) */
-  scf = 'scf',
+  faas = 'scf',
   /** 视频处理服务 (MPS) */
   mps = 'mps',
   /** 资源标签服务 (TAG) */

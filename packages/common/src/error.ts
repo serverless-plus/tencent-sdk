@@ -7,7 +7,7 @@ interface ApiErrorOptions {
   displayMsg?: string;
 }
 
-export class ApiError extends Error {
+export class CommonError extends Error {
   type: string;
   reqId?: string | number;
   code?: string;

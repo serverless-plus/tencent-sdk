@@ -6,6 +6,8 @@ import json from 'rollup-plugin-json';
 import globals from 'rollup-plugin-node-globals';
 import resolve from 'rollup-plugin-node-resolve';
 import typescript2 from 'rollup-plugin-typescript2';
+import commonjs from 'rollup-plugin-commonjs';
+
 import ts from 'typescript';
 
 import project from './project';
@@ -46,6 +48,7 @@ async function bundle() {
             jsnext: true,
             preferBuiltins: true,
           }),
+          commonjs(),
           globals(),
           json(),
           typescript2({
@@ -59,6 +62,7 @@ async function bundle() {
               declaration: false,
               declarationMap: false,
               sourceMap: true,
+              esModuleInterop: true,
             },
           }),
         ],

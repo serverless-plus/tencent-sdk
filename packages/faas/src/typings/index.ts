@@ -32,6 +32,11 @@ export type FaasOptions = {
   debug?: boolean;
 } & Credentials;
 
+export type MonitorOptions = {
+  region?: string;
+  debug?: boolean;
+} & Credentials;
+
 export interface Tag {
   // 键
   Key: string;
@@ -215,4 +220,45 @@ export interface InvokeResult {
   log: string;
   // 函数返回结果
   retMsg: string;
+}
+export interface GetMonitorDataOptions {
+  // 指标名称，参考云函数监控指标文档：https://cloud.tencent.com/document/product/248/45130
+  metric: string;
+  // 函数名称
+  name: string;
+  // 命名空间
+  namespace?: string;
+  // 别名，默认流量，$LATEST
+  alias?: string;
+  // 时间间隔，单位秒，默认为 900s
+  interval?: number;
+  // 统计周期，单位秒，默认为 60s
+  period?: number;
+  // 开始时间, 格式：2018-09-22T19:51:23+08:00
+  startTime?: string;
+  // 结束时间, 格式：2018-09-22T19:51:23+08:00
+  endTime?: string;
+
+  // 是否需要获取接口源数据，默认为 false，返回格式化后的数据
+  isRaw?: boolean;
+}
+
+export interface DataPoint {
+  Timestamps: number[];
+  Values: any[];
+  Dimensions: any[];
+}
+export interface MonitorData {
+  StartTime: string;
+  EndTime: string;
+  Period: number;
+  MetricName: string;
+  DataPoints: DataPoint[];
+  RequestId: string;
+}
+
+export interface FormatedMonitorData {
+  time: string;
+  value: any;
+  timestamp: number;
 }

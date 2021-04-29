@@ -65,30 +65,77 @@ describe('FaaS', () => {
       ...faasConfig,
     });
 
-    reqId = res[0]!.requestId;
+    if (res[0]) {
+      reqId = res[0]!.requestId;
+    }
     expect(res).toBeInstanceOf(Array);
   });
 
-  test('getLogDetail', async () => {
-    const res = await faas.getLogDetail({
+  if (reqId) {
+    test('getLogDetail', async () => {
+      const res = await faas.getLogDetail({
+        ...faasConfig,
+        ...clsConfig,
+        reqId,
+      });
+      expect(res).toBeInstanceOf(Array);
+    });
+    test('getLogByReqId', async () => {
+      const res = await faas.getLogByReqId({
+        ...faasConfig,
+        reqId,
+      });
+      expect(res).toEqual({
+        requestId: reqId,
+        retryNum: 0,
+        startTime: expect.any(String),
+        memoryUsage: expect.any(String),
+        duration: expect.any(String),
+        message: expect.any(String),
+      });
+    });
+  }
+
+  test('getMetric', async () => {
+    const res = await faas.getMetric({
       ...faasConfig,
-      ...clsConfig,
-      reqId,
+      metric: 'Invocation',
+      isRaw: false,
     });
     expect(res).toBeInstanceOf(Array);
+    if (res.length > 0) {
+      expect(res).toEqual(
+        expect.arrayContaining([
+          {
+            time: expect.any(String),
+            value: expect.any(Number),
+            timestamp: expect.any(Number),
+          },
+        ]),
+      );
+    }
   });
-  test('getLogByReqId', async () => {
-    const res = await faas.getLogByReqId({
+
+  test('[isRaw = true] getMetric', async () => {
+    const res = await faas.getMetric({
       ...faasConfig,
-      reqId,
+      metric: 'Invocation',
+      isRaw: true,
     });
+
     expect(res).toEqual({
-      requestId: reqId,
-      retryNum: 0,
-      startTime: expect.any(String),
-      memoryUsage: expect.any(String),
-      duration: expect.any(String),
-      message: expect.any(String),
+      StartTime: expect.any(String),
+      EndTime: expect.any(String),
+      MetricName: expect.any(String),
+      Period: expect.any(Number),
+      DataPoints: expect.arrayContaining([
+        {
+          Dimensions: expect.any(Array),
+          Timestamps: expect.any(Array),
+          Values: expect.any(Array),
+        },
+      ]),
+      RequestId: expect.stringMatching(/.{36}/g),
     });
   });
 });

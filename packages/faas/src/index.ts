@@ -9,6 +9,7 @@ import {
 import { dtz, dayjs, formatDate, Dayjs, TIME_FORMAT } from './dayjs';
 import APIS, { ActionType } from './apis';
 import { getSearchSql } from './utils';
+import { Monitor } from './monitor';
 import {
   Credentials,
   FaasOptions,
@@ -25,15 +26,20 @@ import {
   InvokeType,
   LogType,
   InvokeResult,
+  GetMonitorDataOptions,
+  MonitorData,
+  FormatedMonitorData,
 } from './typings';
 
 export * from './typings';
+export * from './monitor';
 
 export class FaaS {
   credentials: Credentials;
   region: string;
   capi: Capi;
   cls: Cls;
+  monitor: Monitor;
   clsConfigCache: { [prop: string]: { logsetId: string; topicId: string } };
 
   constructor({
@@ -59,6 +65,14 @@ export class FaaS {
     });
 
     this.cls = new Cls({
+      debug,
+      region: this.region,
+      secretId: secretId,
+      secretKey: secretKey,
+      token: token,
+    });
+
+    this.monitor = new Monitor({
       debug,
       region: this.region,
       secretId: secretId,
@@ -392,5 +406,20 @@ export class FaaS {
       .join('');
 
     return curReq;
+  }
+
+  /**
+   * 获取监控数据，默认获取 Invocation 指标
+   * @param {GetMonitorDataOptions} options 参数
+   * @returns
+   */
+  async getMetric({
+    metric = 'Invocation',
+    ...rest
+  }: GetMonitorDataOptions): Promise<FormatedMonitorData[] | MonitorData[]> {
+    return this.monitor.get({
+      metric,
+      ...rest,
+    });
   }
 }

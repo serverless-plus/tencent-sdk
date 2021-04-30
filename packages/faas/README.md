@@ -91,6 +91,18 @@ const res = await faas.getLogList({
 
 > Notice: Default in 1 hour
 
+Get logs between `startTime` and `endTime`:
+
+```js
+const res = await faas.getLogList({
+  name: 'serverless-test',
+  namespace: 'default',
+  qualifier: '$LATEST',
+  startTime: '2021-04-30 14:00:00',
+  endTime: '2021-04-30 14:15:00',
+});
+```
+
 ### getLogDetail
 
 Create log detail by request id:

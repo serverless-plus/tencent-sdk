@@ -99,9 +99,9 @@ export interface GetLogOptions {
   namespace?: string;
   // 函数版本
   qualifier?: string;
-  // 开始时间
+  // 开始时间，支持格式化的时间和时间戳
   startTime?: number | string;
-  // 结束时间
+  // 结束时间，支持格式化的时间和时间戳
   endTime?: number | string;
   // 请求 ID
   reqId?: string;

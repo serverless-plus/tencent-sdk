@@ -215,6 +215,7 @@ export class FaaS {
 
   /**
    * 获取函数日志列表，默认 近1个小时
+   * 注意如果同时定义了 startTime 和 endTime，interval 参数将不起作用
    * @param {GetLogOptions} options 参数
    * @returns {Promise<SearchLogItem[]>} 日志列表
    */
@@ -226,6 +227,7 @@ export class FaaS {
     endTime = Date.now(),
     interval = 3600,
     limit = 10,
+    startTime,
   }: GetLogOptions): Promise<SearchLogItem[]> {
     const { logsetId, topicId } = await this.getClsConfig({
       name,
@@ -250,10 +252,13 @@ export class FaaS {
     // 默认获取从当前到一个小时前时间段的日志
     if (!endTime) {
       endDate = dtz();
-      startDate = endDate.add(-1, 'hour');
     } else {
       endDate = dtz(endTime);
+    }
+    if (!startTime) {
       startDate = dtz(endDate.valueOf() - Number(interval) * 1000);
+    } else {
+      startDate = dtz(startTime);
     }
 
     const sql = getSearchSql({

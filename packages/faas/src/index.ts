@@ -165,6 +165,19 @@ export class FaaS {
     logType = LogType.tail,
     invokeType = InvokeType.request,
   }: InvokeOptions): Promise<InvokeResult> {
+    // invoke 之前检查函数是否存在
+    const detail = await this.get({
+      name,
+      namespace,
+      qualifier,
+    });
+    if (!detail) {
+      throw new CommonError({
+        type: 'API_FAAS_get',
+        code: `1001`,
+        message: `[FAAS] 无法找到指定函数，请部署后调用或检查函数名称`,
+      });
+    }
     const { Result } = await this.request({
       Action: 'Invoke',
       FunctionName: name,
@@ -198,19 +211,20 @@ export class FaaS {
       qualifier,
     });
 
-    if (detail) {
-      const clsConfig = {
-        logsetId: detail.ClsLogsetId,
-        topicId: detail.ClsTopicId,
-      };
-      this.clsConfigCache[cacheKey] = clsConfig;
-      return clsConfig;
+    if (!detail) {
+      throw new CommonError({
+        type: 'API_FAAS_get',
+        code: `1001`,
+        message: `[FAAS] 无法找到指定函数，请部署后调用或检查函数名称`,
+      });
     }
 
-    return {
-      logsetId: '',
-      topicId: '',
+    const clsConfig = {
+      logsetId: detail!.ClsLogsetId,
+      topicId: detail!.ClsTopicId,
     };
+    this.clsConfigCache[cacheKey] = clsConfig;
+    return clsConfig;
   }
 
   /**
@@ -225,7 +239,7 @@ export class FaaS {
     qualifier,
     status,
     endTime = Date.now(),
-    interval = 3600,
+    interval = 600,
     limit = 10,
     startTime,
   }: GetLogOptions): Promise<SearchLogItem[]> {
@@ -238,13 +252,10 @@ export class FaaS {
     if (!logsetId || !topicId) {
       throw new CommonError({
         type: 'API_FAAS_getClsConfig',
-        message: `[FAAS] Can not get CLS config`,
+        code: `1002`,
+        message: `[FAAS] 无法获取函数 CLS 配置，请检查函数是否配置 CLS 功能`,
       });
     }
-
-    console.log(
-      `[FAAS] Get logs for faas (name: ${name}, namespace: ${namespace}, qualifier: ${qualifier})`,
-    );
 
     let startDate: Dayjs;
     let endDate: Dayjs;
@@ -365,19 +376,21 @@ export class FaaS {
     if (!logsetId || !topicId) {
       throw new CommonError({
         type: 'API_FAAS_getLogByReqId',
-        message: `[FAAS] Can not get CLS config`,
+        code: `1002`,
+        message: `[FAAS] 无法获取函数 CLS 配置，请检查函数是否配置 CLS 功能`,
       });
     }
 
     if (!reqId) {
       throw new CommonError({
         type: 'API_FAAS_getLogByReqId',
-        message: `[FAAS] Parameter reqId(Request ID) invalid`,
+        code: `1003`,
+        message: `[FAAS] 参数 reqId(请求 ID) 无效`,
       });
     }
     const endDate = dayjs(endTime);
 
-    console.log(`[FAAS] Get log by Request ID: ${reqId}`);
+    console.log(`[FAAS] 通过请求 ID 获取日志: ${reqId}`);
 
     const detailLog = await this.getLogDetail({
       logsetId: logsetId,

@@ -107,7 +107,7 @@ export interface GetLogOptions {
   reqId?: string;
   // 日志状态
   status?: keyof StatusSqlMap | '';
-  // 时间间隔，单位秒，默认为 3600s
+  // 时间间隔，单位秒，默认为 600s
   interval?: number;
   // 获取条数
   limit?: number;

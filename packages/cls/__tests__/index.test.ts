@@ -134,6 +134,8 @@ describe('Cls', () => {
     const res = await client.deleteTopic({
       topic_id,
     });
+    console.log('res', res);
+
     // TODO: cloud api bug
     // expect(res).toEqual({
     //   requestId: expect.any(String),

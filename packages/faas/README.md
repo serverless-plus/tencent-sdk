@@ -116,17 +116,17 @@ const res = await faas.getLogList({
 
 参数说明：
 
-| 参数      | 描述                               |      类型       | 必须 | 默认         |
-| --------- | ---------------------------------- | :-------------: | :--: | ------------ |
-| name      | 函数名称                           |     string      |  是  |              |
-| namespace | 命名空间                           |     string      |  否  | `default`    |
-| qualifier | 函数版本                           |     string      |  否  | `$LATEST`    |
-| startTime | 开始时间，支持格式化的时间和时间戳 | `string|number` |  否  |              |
-| endTime   | 结束时间，支持格式化的时间和时间戳 | `string|number` |  否  | `Date.now()` |
-| reqId     | 请求 ID                            |     string      |  否  |              |
-| status    | 日志状态                           |     string      |  否  |              |
-| interval  | 时间间隔，单位秒                   |     string      |  否  | `600s`       |
-| limit     | 获取条数                           |     string      |  否  |              |
+| 参数      | 描述                               |       类型       | 必须 | 默认         |
+| --------- | ---------------------------------- | :--------------: | :--: | ------------ |
+| name      | 函数名称                           |      string      |  是  |              |
+| namespace | 命名空间                           |      string      |  否  | `default`    |
+| qualifier | 函数版本                           |      string      |  否  | `$LATEST`    |
+| startTime | 开始时间，支持格式化的时间和时间戳 | `string\|number` |  否  |              |
+| endTime   | 结束时间，支持格式化的时间和时间戳 | `string\|number` |  否  | `Date.now()` |
+| reqId     | 请求 ID                            |      string      |  否  |              |
+| status    | 日志状态                           |      string      |  否  |              |
+| interval  | 时间间隔，单位秒                   |      string      |  否  | `600s`       |
+| limit     | 获取条数                           |      string      |  否  |              |
 
 ### getLogDetail
 

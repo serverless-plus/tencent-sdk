@@ -1,19 +1,18 @@
 ## Tencent Cloud FaaS SDK
 
-This is a SDK tool for [Tencent Cloud FaaS](https://console.cloud.tencent.com/scf) service.
+专门为 [腾讯云云函数](https://console.cloud.tencent.com/scf) 提供的 SDK 工具.
 
-## Installation
+## 安装
 
 ```bash
 $ npm i @tencent-sdk/faas --save
-# or
+# 或者
 $ yarn add @tencent-sdk/faas
 ```
 
-## Usage
+## 使用
 
-`FaaS` is the only class for create a client request instance.
-You can use it like below:
+初始化实例:
 
 ```js
 import { FaaS } from '@tencent-sdk/faas';
@@ -27,19 +26,29 @@ const client = new FaaS({
 });
 ```
 
-Support methods:
+### 参数说明
 
-- [getRegion()](#getRegion)
-- [setRegion()](#setRegion)
-- [invoke()](#invoke)
-- [getClsConfig()](#getClsConfig)
-- [getLogList()](#getLogList)
-- [getLogDetail()](#getLogDetail)
-- [getLogByReqId()](#getLogByReqId)
+| 参数      | 描述                     | 类型    | 必须 | 默认值       |
+| --------- | ------------------------ | ------- | :--: | ------------ |
+| secretId  | 腾讯云 API 密钥 ID       | string  |  是  | ''           |
+| secretKey | 腾讯云 API 密钥 Key      | string  |  是  | ''           |
+| token     | 腾讯云临时鉴权密钥 Token | string  |  否  | ''           |
+| region    | 请求服务地域             | string  |  否  | ap-guangzhou |
+| debug     | 是否打印调试信息         | boolean |  否  | false        |
+
+### 支持方法
+
+- 获取地区配置 [getRegion()](#getRegion)
+- 设置地区 [setRegion()](#setRegion)
+- 调用该函数 [invoke()](#invoke)
+- 获取函数 CLS 配置 [getClsConfig()](#getClsConfig)
+- 获取 CLS 日志列表 [getLogList()](#getLogList)
+- 获取日志详情 [getLogDetail()](#getLogDetail)
+- 通过请求 ID 获取日志详情 [getLogByReqId()](#getLogByReqId)
 
 ### getRegion
 
-Get current region config:
+获取当前地区配置:
 
 ```js
 const region = client.getRegion();
@@ -47,7 +56,7 @@ const region = client.getRegion();
 
 ### setRegion
 
-Config service region:
+配置服务地区:
 
 ```js
 client.setRegion('ap-guangzhou');
@@ -55,7 +64,7 @@ client.setRegion('ap-guangzhou');
 
 ### invoke
 
-Invoke faas:
+调用函数:
 
 ```js
 const res = await faas.invoke({
@@ -67,7 +76,7 @@ const res = await faas.invoke({
 
 ### getClsConfig
 
-Get CLS config:
+获取函数 CLS 配置:
 
 ```js
 const res = await faas.getClsConfig({
@@ -79,7 +88,7 @@ const res = await faas.getClsConfig({
 
 ### getLogList
 
-Get log list:
+获取日志列表:
 
 ```js
 const res = await faas.getLogList({
@@ -89,9 +98,9 @@ const res = await faas.getLogList({
 });
 ```
 
-> Notice: Default in 1 hour
+> 注意: 默认获取最近 10 分钟日志。
 
-Get logs between `startTime` and `endTime`:
+通过 `startTime` 和 `endTime` 参数，获取时间段内日志:
 
 ```js
 const res = await faas.getLogList({
@@ -103,9 +112,25 @@ const res = await faas.getLogList({
 });
 ```
 
+> 注意：时间必须是 UTC+8 （亚洲/上海时区）时间。
+
+参数说明：
+
+|  参数     | 描述                               |      类型       | 必须 | 默认         |
+| --------- | ---------------------------------- | :-------------: | :--: | ------------ |
+| name      | 函数名称                           |     string      |  是  |              |
+| namespace | 命名空间                           |     string      |  否  | `default`    |
+| qualifier | 函数版本                           |     string      |  否  | `$LATEST`    |
+| startTime | 开始时间，支持格式化的时间和时间戳 | `string|number` |  否  |              |
+| endTime   | 结束时间，支持格式化的时间和时间戳 | `string|number` |  否  | `Date.now()` |
+| reqId     | 请求 ID                            |     string      |  否  |              |
+| status    | 日志状态                           |     string      |  否  |              |
+| interval  | 时间间隔，单位秒                   |     string      |  否  | `600s`       |
+| limit     | 获取条数                           |     string      |  否  |              |
+
 ### getLogDetail
 
-Create log detail by request id:
+获取指定请求 ID 日志详情（日志元数据）:
 
 ```js
 const res = await faas.getLogDetail({
@@ -118,9 +143,20 @@ const res = await faas.getLogDetail({
 });
 ```
 
+参数说明：
+
+|  参数     | 描述        |  类型  | 必须 | 默认      |
+| --------- | ----------- | :----: | :--: | --------- |
+| name      | 函数名称    | string |  是  |           |
+| namespace | 命名空间    | string |  否  | `default` |
+| qualifier | 函数版本    | string |  否  | `$LATEST` |
+| logsetId  | 日志集 ID   | string |  是  |           |
+| topicId   | 日志主题 ID | string |  是  |           |
+| reqId     | 请求 ID     | string |  是  |           |
+
 ### getLogByReqId
 
-Get topic:
+通过请求 ID 获取日志详情（组装日志数据）:
 
 ```js
 const res = await faas.getLogByReqId({
@@ -131,21 +167,22 @@ const res = await faas.getLogByReqId({
 });
 ```
 
-## Options
+参数说明：
 
-```js
-const client = new FaaS(FaasOptions);
-```
+|  参数     | 描述     |  类型  | 必须 | 默认      |
+| --------- | -------- | :----: | :--: | --------- |
+| name      | 函数名称 | string |  是  |           |
+| namespace | 命名空间 | string |  否  | `default` |
+| qualifier | 函数版本 | string |  否  | `$LATEST` |
+| reqId     | 请求 ID  | string |  是  |           |
 
-### `FaasOptions` for FaaS Construct
+## 错误码
 
-| Name      | Description                   | Type    | Required | Default      |
-| --------- | ----------------------------- | ------- | -------- | ------------ |
-| secretId  | tencent account secret id     | string  | true     | ''           |
-| secretKey | tencent account secret key    | string  | true     | ''           |
-| token     | tencent account token         | string  | false    | ''           |
-| region    | request region                | string  | true     | ap-guangzhou |
-| debug     | whether enable log debug info | boolean | false    | false        |
+| Type                   | Code | Description            |
+| ---------------------- | ---- | ---------------------- |
+| API_FAAS_get           | 1001 | Can not get SCF        |
+| API_FAAS_getClsConfig  | 1002 | Can not get CLS config |
+| API_FAAS_getLogByReqId | 1003 | Invalid Request ID     |
 
 ## License
 

@@ -116,7 +116,7 @@ const res = await faas.getLogList({
 
 参数说明：
 
-|  参数     | 描述                               |      类型       | 必须 | 默认         |
+| 参数      | 描述                               |      类型       | 必须 | 默认         |
 | --------- | ---------------------------------- | :-------------: | :--: | ------------ |
 | name      | 函数名称                           |     string      |  是  |              |
 | namespace | 命名空间                           |     string      |  否  | `default`    |
@@ -145,7 +145,7 @@ const res = await faas.getLogDetail({
 
 参数说明：
 
-|  参数     | 描述        |  类型  | 必须 | 默认      |
+| 参数      | 描述        |  类型  | 必须 | 默认      |
 | --------- | ----------- | :----: | :--: | --------- |
 | name      | 函数名称    | string |  是  |           |
 | namespace | 命名空间    | string |  否  | `default` |
@@ -169,7 +169,7 @@ const res = await faas.getLogByReqId({
 
 参数说明：
 
-|  参数     | 描述     |  类型  | 必须 | 默认      |
+| 参数      | 描述     |  类型  | 必须 | 默认      |
 | --------- | -------- | :----: | :--: | --------- |
 | name      | 函数名称 | string |  是  |           |
 | namespace | 命名空间 | string |  否  | `default` |
@@ -178,11 +178,11 @@ const res = await faas.getLogByReqId({
 
 ## 错误码
 
-| Type                   | Code | Description            |
-| ---------------------- | ---- | ---------------------- |
-| API_FAAS_get           | 1001 | Can not get SCF        |
-| API_FAAS_getClsConfig  | 1002 | Can not get CLS config |
-| API_FAAS_getLogByReqId | 1003 | Invalid Request ID     |
+| 类型                   | 错误码 | 描述                   |
+| ---------------------- | ------ | ---------------------- |
+| API_FAAS_get           | 1001   | Can not get SCF        |
+| API_FAAS_getClsConfig  | 1002   | Can not get CLS config |
+| API_FAAS_getLogByReqId | 1003   | Invalid Request ID     |
 
 ## License
 

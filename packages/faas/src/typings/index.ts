@@ -195,12 +195,20 @@ export enum InvokeType {
 }
 
 export interface InvokeOptions {
+  // 函数名称
   name: string;
-  namespace: string;
-  qualifier: string;
+  // 命名空间
+  namespace?: string;
+  // 版本号
+  qualifier?: string;
+  // 触发器事件
   event?: Record<string, any>;
+  // 日志类型
   logType?: LogType;
+  // 执行类型
   invokeType?: InvokeType;
+  // 函数类型
+  faasType?: string;
 }
 
 export interface InvokeResult {
@@ -261,4 +269,17 @@ export interface FormatedMonitorData {
   time: string;
   value: any;
   timestamp: number;
+}
+
+export interface GetTriggersOptions {
+  name: string;
+  namespace?: string;
+  page?: number;
+}
+
+export interface TriggerData {
+  Type: string;
+  TriggerDesc?: string;
+  TriggerName?: string;
+  Qualifier?: string;
 }

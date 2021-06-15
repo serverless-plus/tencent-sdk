@@ -1,5 +1,6 @@
 import { Capi } from '@tencent-sdk/capi';
 import { Cls } from '@tencent-sdk/cls';
+import got from 'got';
 import {
   ServiceType,
   CommonError,
@@ -29,7 +30,10 @@ import {
   GetMonitorDataOptions,
   MonitorData,
   FormatedMonitorData,
+  GetTriggersOptions,
+  TriggerData,
 } from './typings';
+import { ERRORS } from './constants';
 
 export * from './typings';
 export * from './monitor';
@@ -113,6 +117,31 @@ export class FaaS {
     return result;
   }
 
+  async getTriggers({
+    name,
+    namespace = 'default',
+    page = 0,
+  }: GetTriggersOptions): Promise<TriggerData[]> {
+    const limit = 100;
+    const { Triggers = [], TotalCount } = await this.request({
+      Action: 'ListTriggers',
+      FunctionName: name,
+      Namespace: namespace,
+      Limit: limit,
+      Offset: page * limit,
+    });
+    if (TotalCount > 100) {
+      const res = await this.getTriggers({
+        name,
+        namespace,
+        page: page + 1,
+      });
+      return Triggers.concat(res);
+    }
+
+    return Triggers;
+  }
+
   /**
    *  获取 faas 详情
    * @param {GetFaasOptions} options 参数
@@ -152,6 +181,33 @@ export class FaaS {
     }
   }
 
+  async invokeHTTPFaas({
+    name,
+    namespace = 'default',
+    event = {},
+  }: InvokeOptions): Promise<string> {
+    const triggers = await this.getTriggers({
+      name,
+      namespace,
+    });
+    if (triggers.length === 0) {
+      throw new CommonError(ERRORS.WEB_FAAS_NO_TRIGGERS);
+    }
+    const { TriggerDesc } = triggers[0];
+    const { service } = JSON.parse(TriggerDesc as string);
+    const baseUrl = service.subDomain;
+    const { method = 'GET', path = '/', data } = event;
+    const urlObj = new URL(`${baseUrl}/${path}`);
+    const realPath = urlObj.pathname.replace(/\/+/g, '/');
+    const url = `${urlObj.origin}${realPath}`;
+    const { body } = await got({
+      url,
+      method,
+      form: data,
+    });
+    return body;
+  }
+
   /**
    * 调用函数
    * @param {InvokeOptions} options 参数
@@ -162,9 +218,10 @@ export class FaaS {
     namespace = 'default',
     qualifier = '$LATEST',
     event = {},
+    faasType = 'event',
     logType = LogType.tail,
     invokeType = InvokeType.request,
-  }: InvokeOptions): Promise<InvokeResult> {
+  }: InvokeOptions): Promise<InvokeResult | string> {
     // invoke 之前检查函数是否存在
     const detail = await this.get({
       name,
@@ -172,10 +229,14 @@ export class FaaS {
       qualifier,
     });
     if (!detail) {
-      throw new CommonError({
-        type: 'API_FAAS_get',
-        code: `1001`,
-        message: `[FAAS] 无法找到指定函数，请部署后调用或检查函数名称`,
+      throw new CommonError(ERRORS.GET_FAAS_ERROR);
+    }
+    if (faasType === 'web') {
+      return this.invokeHTTPFaas({
+        name,
+        namespace,
+        event,
+        qualifier,
       });
     }
     const { Result } = await this.request({
@@ -212,11 +273,7 @@ export class FaaS {
     });
 
     if (!detail) {
-      throw new CommonError({
-        type: 'API_FAAS_get',
-        code: `1001`,
-        message: `[FAAS] 无法找到指定函数，请部署后调用或检查函数名称`,
-      });
+      throw new CommonError(ERRORS.GET_FAAS_ERROR);
     }
 
     const clsConfig = {
@@ -250,11 +307,7 @@ export class FaaS {
     });
 
     if (!logsetId || !topicId) {
-      throw new CommonError({
-        type: 'API_FAAS_getClsConfig',
-        code: `1002`,
-        message: `[FAAS] 无法获取函数 CLS 配置，请检查函数是否配置 CLS 功能`,
-      });
+      throw new CommonError(ERRORS.GET_CLS_CONFIG_ERROR);
     }
 
     let startDate: Dayjs;
@@ -374,19 +427,11 @@ export class FaaS {
     });
 
     if (!logsetId || !topicId) {
-      throw new CommonError({
-        type: 'API_FAAS_getLogByReqId',
-        code: `1002`,
-        message: `[FAAS] 无法获取函数 CLS 配置，请检查函数是否配置 CLS 功能`,
-      });
+      throw new CommonError(ERRORS.GET_CLS_CONFIG_ERROR);
     }
 
     if (!reqId) {
-      throw new CommonError({
-        type: 'API_FAAS_getLogByReqId',
-        code: `1003`,
-        message: `[FAAS] 参数 reqId(请求 ID) 无效`,
-      });
+      throw new CommonError(ERRORS.REQUEST_ID_INVALID);
     }
     const endDate = dayjs(endTime);
 

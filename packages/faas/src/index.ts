@@ -218,7 +218,6 @@ export class FaaS {
     namespace = 'default',
     qualifier = '$LATEST',
     event = {},
-    faasType = 'event',
     logType = LogType.tail,
     invokeType = InvokeType.request,
   }: InvokeOptions): Promise<InvokeResult | string> {
@@ -231,7 +230,7 @@ export class FaaS {
     if (!detail) {
       throw new CommonError(ERRORS.GET_FAAS_ERROR);
     }
-    if (faasType === 'web') {
+    if (detail.Type === 'HTTP') {
       return this.invokeHTTPFaas({
         name,
         namespace,

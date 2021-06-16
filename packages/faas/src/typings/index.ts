@@ -45,6 +45,8 @@ export interface Tag {
 }
 
 export interface FunctionInfo {
+  // 函数类型
+  Type: string;
   // 函数名称
   FunctionName: string;
   // 命名空间
@@ -207,8 +209,6 @@ export interface InvokeOptions {
   logType?: LogType;
   // 执行类型
   invokeType?: InvokeType;
-  // 函数类型
-  faasType?: string;
 }
 
 export interface InvokeResult {

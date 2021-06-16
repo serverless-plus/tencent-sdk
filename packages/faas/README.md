@@ -74,6 +74,25 @@ const res = await faas.invoke({
 });
 ```
 
+参数说明：
+
+| 参数      | 描述     |  类型  | 必须 | 默认      |
+| --------- | -------- | :----: | :--: | --------- |
+| name      | 函数名称 | string |  是  |           |
+| namespace | 命名空间 | string |  否  | `default` |
+| qualifier | 函数版本 | string |  否  | `$LATEST` |
+| event     | 触发参数 | object |  否  | `{}`      |
+
+`event` 为触发函数的事件对象的。
+
+如果函数是 `web` 类型，`event` 对象参数如下：
+
+| 参数   | 描述     |  类型  | 必须 | 默认  |
+| ------ | -------- | :----: | :--: | ----- |
+| method | 请求方法 | string |  否  | `get` |
+| path   | 请求路径 | string |  否  | `/`   |
+| data   | 请求数据 | object |  否  | `{}`  |
+
 ### getClsConfig
 
 获取函数 CLS 配置:
@@ -178,11 +197,12 @@ const res = await faas.getLogByReqId({
 
 ## 错误码
 
-| 类型                   | 错误码 | 描述                   |
-| ---------------------- | ------ | ---------------------- |
-| API_FAAS_get           | 1001   | Can not get SCF        |
-| API_FAAS_getClsConfig  | 1002   | Can not get CLS config |
-| API_FAAS_getLogByReqId | 1003   | Invalid Request ID     |
+| 类型                   | 错误码 | 描述                     |
+| ---------------------- | ------ | ------------------------ |
+| API_FAAS_get           | 1001   | Can not get SCF          |
+| API_FAAS_getClsConfig  | 1002   | Can not get CLS config   |
+| API_FAAS_getLogByReqId | 1003   | Invalid Request ID       |
+| API_FAAS_getTriggers   | 1004   | Can not get SCF Triggers |
 
 ## License
 

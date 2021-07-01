@@ -7,7 +7,14 @@ import {
   cleanEmptyValue,
   camelCaseProps,
   pascalCaseProps,
-  CommonError,
+  getUnixTime,
+  getDate,
+  flatten,
+  querystring,
+  sortObjectKey,
+  stringifyObject,
+  sha1,
+  hash,
 } from '../src';
 
 describe('Common methods', () => {
@@ -17,25 +24,6 @@ describe('Common methods', () => {
       site: 'test.com',
     },
   };
-  test('CommonError', async () => {
-    try {
-      throw new CommonError({
-        type: 'TEST_ApiError',
-        message: 'This is a test error',
-        stack: 'error stack',
-        reqId: 123,
-        code: 'abc',
-        displayMsg: 'error test',
-      });
-    } catch (e) {
-      expect(e.type).toEqual('TEST_ApiError');
-      expect(e.message).toEqual('This is a test error');
-      expect(e.stack).toEqual('error stack');
-      expect(e.reqId).toEqual(123);
-      expect(e.code).toEqual('abc');
-      expect(e.displayMsg).toEqual('error test');
-    }
-  });
   test('deepClone', async () => {
     expect(deepClone(testObj)).toEqual({
       name: 'test',
@@ -73,7 +61,6 @@ describe('Common methods', () => {
     expect(isEmpty(null)).toBe(true);
     expect(isEmpty(NaN)).toBe(true);
   });
-
   test('cleanEmptyValue', async () => {
     expect(
       cleanEmptyValue({
@@ -111,5 +98,41 @@ describe('Common methods', () => {
         },
       }),
     ).toEqual(testObj);
+  });
+  test('getUnixTime', async () => {
+    expect(getUnixTime(new Date())).toBeGreaterThan(1625079323);
+  });
+  test('getDate', async () => {
+    const res = getDate(new Date());
+    expect(/^(\d){4}-\d{2}-\d{2}$/.test(res)).toBe(true);
+  });
+  test('flatten', async () => {
+    expect(flatten(testObj)).toEqual({
+      name: 'test',
+      'detail.site': 'test.com',
+    });
+  });
+  test('querystring', async () => {
+    expect(querystring(flatten(testObj))).toEqual(
+      'name=test&detail.site=test.com',
+    );
+  });
+  test('sortObjectKey', async () => {
+    expect(sortObjectKey(testObj)).toEqual(['detail', 'name']);
+  });
+  test('stringifyObject', async () => {
+    expect(stringifyObject(flatten(testObj), sortObjectKey)).toEqual(
+      'detail.site=test.com&name=test',
+    );
+  });
+  test('sha1', async () => {
+    expect(sha1('test', '123')).toEqual(
+      'cfa54b5a91f6667966fc8a33362128a4715572f7',
+    );
+  });
+  test('hash', async () => {
+    expect(hash('test', 'sha1')).toEqual(
+      'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3',
+    );
   });
 });

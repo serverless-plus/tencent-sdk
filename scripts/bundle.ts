@@ -25,16 +25,21 @@ function getKeys(p) {
 
 async function bundle() {
   try {
-    const outputs = process.argv.slice(2)[0].split(',');
+    const argv = process.argv.slice(2);
+    const outputs = argv[0].split(',');
+    const pkgName = argv[1];
+    console.log('pkgName', pkgName);
+
     const packages = project.packages;
 
     const count = packages.length;
     let cur = 0;
-    for (const pkg of packages) {
+
+    async function bundlePkg(pkg) {
       const logPrefix = c.grey(`[${++cur}/${count}] ${pkg.scopedName}`);
       logBundle(`${logPrefix} creating bundle`);
 
-      const externals = project.packages
+      const externals = packages
         .filter((p) => p.name !== pkg.name)
         .map((p) => p.scopedName);
 
@@ -106,6 +111,17 @@ async function bundle() {
           format: 'umd',
           sourcemap: true,
         });
+      }
+    }
+
+    for (const pkg of packages) {
+      if (pkgName) {
+        if (pkg.name === pkgName) {
+          await bundlePkg(pkg);
+          break;
+        }
+      } else {
+        await bundlePkg(pkg);
       }
     }
   } catch (err) {

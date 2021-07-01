@@ -22,10 +22,8 @@
   "author": "yugasun",
   "license": "MIT",
   "dependencies": {
-    "@types/request": "^2.48.3",
-    "@types/request-promise-native": "^1.0.17",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.8"
+    "@tencent-sdk/common": "^0.1.0",
+    "got": "^11.8.2"
   },
   "directories": {
     "test": "test"

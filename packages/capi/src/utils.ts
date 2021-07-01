@@ -1,4 +1,6 @@
 import { createHash, createHmac } from 'crypto';
+import { Method } from 'got';
+import { getUnixTime, getDate, flatten } from '@tencent-sdk/common';
 import { CapiOptions } from './index';
 
 export interface Payload {
@@ -10,8 +12,8 @@ export interface Payload {
 }
 
 export interface HostParams {
-  ServiceType: string;
-  Region: string;
+  serviceType: string;
+  region: string;
   host: string | undefined;
   baseHost: string | undefined;
   path?: string;
@@ -21,43 +23,25 @@ export interface HostParams {
 export interface TencentSignResult {
   url: string;
   payload: Payload;
-  Host: string;
-  Authorization: string;
-  Timestamp: string | string[] | undefined;
+  host: string;
+  authorization: string;
+  timestamp: string | string[] | undefined;
 }
 
 export interface TencentSignResultV1 {
   url: string;
-  method: string;
+  method: Method;
   payload: Payload;
 }
 
-export function logger(topic: string, content: string): void {
-  console.log(`[DEBUG] ${topic}: ${content} `);
-}
-
 export function getHost(
-  { host, ServiceType, Region, baseHost }: HostParams,
+  { host, serviceType, region, baseHost }: HostParams,
   isV1 = false,
 ) {
   if (!host) {
-    host = `${ServiceType}${isV1 ? '' : `.${Region}`}.${baseHost}`;
+    host = `${serviceType}${isV1 ? '' : `.${region}`}.${baseHost}`;
   }
   return host;
-}
-
-export function getUnixTime(date: Date) {
-  const val = date.getTime();
-  return Math.ceil(val / 1000);
-}
-
-export function getDate(date: Date) {
-  const year = date.getUTCFullYear();
-  const month = date.getUTCMonth() + 1;
-  const day = date.getUTCDate();
-  return `${year}-${month > 9 ? month : `0${month}`}-${
-    day > 9 ? day : `0${day}`
-  }`;
 }
 
 export function getUrl(opts: HostParams, isV1 = false) {
@@ -77,102 +61,6 @@ export function sign(
 }
 
 /**
- * is array
- * @param obj object
- */
-export function isArray(obj: any) {
-  return Object.prototype.toString.call(obj) == '[object Array]';
-}
-
-/**
- * is object
- * @param obj object
- */
-export function isObject(obj: any) {
-  return obj === Object(obj);
-}
-
-/**
- * iterate object or array
- * @param obj object or array
- * @param iterator iterator function
- */
-export function _forEach(
-  obj: object | any[],
-  iterator: (value: any, index: number | string, array: any) => void,
-) {
-  if (isArray(obj)) {
-    let arr = obj as Array<any>;
-    if (arr.forEach) {
-      arr.forEach(iterator);
-      return;
-    }
-    for (let i = 0; i < arr.length; i += 1) {
-      iterator(arr[i], i, arr);
-    }
-  } else {
-    const oo = obj as { [propName: string]: any };
-    for (let key in oo) {
-      if (obj.hasOwnProperty(key)) {
-        iterator(oo[key], key, obj);
-      }
-    }
-  }
-}
-
-/**
- * flatter request parameter
- * @param obj target object or array
- */
-export function flatten(obj: {
-  [propName: string]: any;
-}): { [propName: string]: any } {
-  if (!isArray(obj) && !isObject(obj)) {
-    return {};
-  }
-  const ret: { [propName: string]: any } = {};
-  const _dump = function(
-    obj: object | Array<any>,
-    prefix: string | null,
-    parents?: any[],
-  ) {
-    const checkedParents: any[] = [];
-    if (parents) {
-      let i;
-      for (i = 0; i < parents.length; i++) {
-        if (parents[i] === obj) {
-          throw new Error('object has circular references');
-        }
-        checkedParents.push(obj);
-      }
-    }
-    checkedParents.push(obj);
-    if (!isArray(obj) && !isObject(obj)) {
-      if (!prefix) {
-        throw obj + 'is not object or array';
-      }
-      ret[prefix] = obj;
-      return {};
-    }
-
-    if (isArray(obj)) {
-      // it's an array
-      _forEach(obj, function(obj, i) {
-        _dump(obj, prefix ? prefix + '.' + i : '' + i, checkedParents);
-      });
-    } else {
-      // it's an object
-      _forEach(obj, function(obj, key) {
-        _dump(obj, prefix ? prefix + '.' + key : '' + key, checkedParents);
-      });
-    }
-  };
-
-  _dump(obj, null);
-  return ret;
-}
-
-/**
  * generate tencent cloud sign result
  *
  * @param {Payload} payload
@@ -188,51 +76,51 @@ export function tencentSign(
     path: options.path,
     protocol: options.protocol,
     baseHost: options.baseHost,
-    ServiceType: options.ServiceType,
-    Region: options.Region,
+    serviceType: options.serviceType,
+    region: options.region,
   };
   const url = getUrl(hostParams);
-  const Host = getHost(hostParams);
+  const host = getHost(hostParams);
   const d = new Date();
-  const Timestamp = String(getUnixTime(d));
+  const timestamp = String(getUnixTime(d));
   const date = getDate(d);
-  const Algorithm = 'TC3-HMAC-SHA256';
+  const algorithm = 'TC3-HMAC-SHA256';
 
   // 1. create Canonical request string
-  const HTTPRequestMethod = (options.method || 'POST').toUpperCase();
-  const CanonicalURI = '/';
-  const CanonicalQueryString = '';
-  const CanonicalHeaders = `content-type:application/json\nhost:${Host}\n`;
-  const SignedHeaders = 'content-type;host';
-  const HashedRequestPayload = createHash('sha256')
+  const httpRequestMethod = (options.method || 'POST').toUpperCase();
+  const canonicalURI = '/';
+  const canonicalQueryString = '';
+  const canonicalHeaders = `content-type:application/json\nhost:${host}\n`;
+  const signedHeaders = 'content-type;host';
+  const hashedRequestPayload = createHash('sha256')
     .update(JSON.stringify(payload))
     .digest('hex');
-  const CanonicalRequest = `${HTTPRequestMethod}\n${CanonicalURI}\n${CanonicalQueryString}\n${CanonicalHeaders}\n${SignedHeaders}\n${HashedRequestPayload}`;
+  const canonicalRequest = `${httpRequestMethod}\n${canonicalURI}\n${canonicalQueryString}\n${canonicalHeaders}\n${signedHeaders}\n${hashedRequestPayload}`;
 
   // 2. create string to sign
-  const CredentialScope = `${date}/${options.ServiceType}/tc3_request`;
-  const HashedCanonicalRequest = createHash('sha256')
-    .update(CanonicalRequest)
+  const credentialScope = `${date}/${options.serviceType}/tc3_request`;
+  const hashedCanonicalRequest = createHash('sha256')
+    .update(canonicalRequest)
     .digest('hex');
-  const StringToSign = `${Algorithm}\n${Timestamp}\n${CredentialScope}\n${HashedCanonicalRequest}`;
+  const stringToSign = `${algorithm}\n${timestamp}\n${credentialScope}\n${hashedCanonicalRequest}`;
 
   // 3. calculate signature
-  const SecretDate = sign(date, Buffer.from(`TC3${options.SecretKey}`, 'utf8'));
-  const SecretService = sign(options.ServiceType, SecretDate);
-  const SecretSigning = sign('tc3_request', SecretService);
-  const Signature = createHmac('sha256', SecretSigning)
-    .update(Buffer.from(StringToSign, 'utf8'))
+  const secretDate = sign(date, Buffer.from(`TC3${options.secretKey}`, 'utf8'));
+  const secretService = sign(options.serviceType, secretDate);
+  const secretSigning = sign('tc3_request', secretService);
+  const signature = createHmac('sha256', secretSigning)
+    .update(Buffer.from(stringToSign, 'utf8'))
     .digest('hex');
 
   // 4. create authorization
-  const Authorization = `${Algorithm} Credential=${options.SecretId}/${CredentialScope}, SignedHeaders=${SignedHeaders}, Signature=${Signature}`;
+  const authorization = `${algorithm} Credential=${options.secretId}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
 
   return {
     url,
     payload,
-    Host,
-    Authorization,
-    Timestamp,
+    host,
+    authorization,
+    timestamp,
   };
 }
 
@@ -252,8 +140,8 @@ export function tencentSignV1(
     path: options.path,
     protocol: options.protocol,
     baseHost: options.baseHost,
-    ServiceType: options.ServiceType,
-    Region: options.Region,
+    serviceType: options.serviceType,
+    region: options.region,
   };
   const url = getUrl(hostParams, true);
   const Host = getHost(hostParams, true);
@@ -261,27 +149,27 @@ export function tencentSignV1(
   const Timestamp = getUnixTime(d);
   const Nonce = Math.round(Math.random() * 65535);
 
-  payload.Region = options.Region;
+  payload.Region = options.region;
   payload.Nonce = Nonce;
   payload.Timestamp = Timestamp;
-  payload.SecretId = options.SecretId;
-  payload.Version = payload.Version || options.Version;
-  payload.RequestClient = options.RequestClient;
+  payload.SecretId = options.secretId;
+  payload.Version = payload.Version || options.version;
+  payload.RequestClient = options.requestClient;
 
-  if (options.Token) {
-    payload.Token = options.Token;
+  if (options.token) {
+    payload.Token = options.token;
   }
-  if (options.SignatureMethod === 'sha256') {
+  if (options.signatureMethod === 'sha256') {
     payload.SignatureMethod = 'HmacSHA256';
   }
 
   payload = flatten(payload);
 
   const keys = Object.keys(payload).sort();
-  const method = (options.method || 'POST').toUpperCase();
+  const method = (options.method || 'POST').toUpperCase() as Method;
 
   let qstr = '';
-  keys.forEach(function(key) {
+  keys.forEach((key) => {
     if (key === '') {
       return;
     }
@@ -304,8 +192,8 @@ export function tencentSignV1(
 
   payload.Signature = sign(
     `${method}${Host}${options.path}?${qstr}`,
-    Buffer.from(options.SecretKey, 'utf8'),
-    options.SignatureMethod,
+    Buffer.from(options.secretKey, 'utf8'),
+    options.signatureMethod,
   ).toString('base64');
 
   return {
@@ -313,50 +201,4 @@ export function tencentSignV1(
     method,
     payload,
   };
-}
-
-function stringifyPrimitive(v: any) {
-  switch (typeof v) {
-    case 'string':
-      return v;
-
-    case 'boolean':
-      return v ? 'true' : 'false';
-
-    case 'number':
-      return isFinite(v) ? v : '';
-
-    default:
-      return '';
-  }
-}
-interface ParsedUrlQueryInput {
-  [key: string]: any;
-}
-
-export function querystring(obj?: ParsedUrlQueryInput): string {
-  const sep = '&';
-  const eq = '=';
-
-  if (!obj) return '';
-
-  if (obj && typeof obj === 'object') {
-    return Object.keys(obj)
-      .map(function(k) {
-        let ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
-        if (Array.isArray(obj[k])) {
-          return (obj[k] as Array<any>)
-            .map(function(v) {
-              return ks + encodeURIComponent(stringifyPrimitive(v));
-            })
-            .join(sep);
-        } else {
-          return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
-        }
-      })
-      .filter(Boolean)
-      .join(sep);
-  }
-
-  return '';
 }

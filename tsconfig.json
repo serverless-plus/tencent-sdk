@@ -1,8 +1,9 @@
 {
   "files": [],
   "references": [
-    { "path": "packages/cos" },
     { "path": "packages/capi" },
+    { "path": "packages/login" },
+    { "path": "packages/cls" },
     { "path": "packages/faas" },
     { "path": "packages/capi-web" }
   ]

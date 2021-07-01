@@ -35,7 +35,6 @@
     "@tencent-sdk/capi": "^1.1.8",
     "@tencent-sdk/cls": "0.2.1",
     "@tencent-sdk/common": "0.1.0",
-    "camelcase": "^6.2.0",
     "dayjs": "^1.10.4",
     "got": "^11.8.2"
   }

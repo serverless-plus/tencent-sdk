@@ -1,12 +1,12 @@
 const { join } = require('path');
 require('dotenv').config({ path: join(__dirname, '.env.test') });
 
-const isDebug = process.env.DEBUG === 'true';
+const isCI = !!process.env.CI;
 const mod = process.env.MODULE;
 
 const config = {
   verbose: true,
-  silent: !isDebug,
+  silent: isCI,
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
@@ -17,7 +17,7 @@ const config = {
   },
   testTimeout: 60000,
   testEnvironment: 'node',
-  testRegex: '/__tests__/.*\\.(test|spec)\\.(js|ts)$',
+  testRegex: '/packages/.*/__tests__/.*\\.(test|spec)\\.(js|ts)$',
   testPathIgnorePatterns: ['/node_modules/', '/dist/', '/__tests__/fixtures/'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };

@@ -1,4 +1,4 @@
-import { ServiceType, ApiFactory } from '@tencent-sdk/common';
+import { ServiceType, ApiFactory } from '@tencent-sdk/capi';
 
 const ACTIONS = [
   'CreateFunction',
@@ -21,6 +21,7 @@ const ACTIONS = [
 export type ActionType = typeof ACTIONS[number];
 
 const APIS = ApiFactory({
+  isV3: true,
   serviceType: ServiceType.faas,
   version: '2018-04-16',
   actions: ACTIONS,

@@ -31,8 +31,7 @@
   },
   "homepage": "https://github.com/yugasun/tencent-sdk#readme",
   "dependencies": {
-    "@tencent-sdk/capi": "^1.1.8",
     "camelcase": "^6.2.0",
-    "type-fest": "^1.0.2"
+    "type-fest": "^1.2.1"
   }
 }

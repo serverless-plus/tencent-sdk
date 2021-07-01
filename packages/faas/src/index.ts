@@ -1,12 +1,7 @@
-import { Capi } from '@tencent-sdk/capi';
-import { Cls } from '@tencent-sdk/cls';
 import got from 'got';
-import {
-  ServiceType,
-  CommonError,
-  camelCaseProps,
-  pascalCaseProps,
-} from '@tencent-sdk/common';
+import { camelCaseProps } from '@tencent-sdk/common';
+import { Capi, ServiceType, CommonError } from '@tencent-sdk/capi';
+import { Cls } from '@tencent-sdk/cls';
 import { dtz, dayjs, formatDate, Dayjs, TIME_FORMAT } from './dayjs';
 import APIS, { ActionType } from './apis';
 import { getSearchSql } from './utils';
@@ -61,11 +56,11 @@ export class FaaS {
     this.region = region;
     this.capi = new Capi({
       debug,
-      Region: region,
-      ServiceType: ServiceType.faas,
-      SecretId: secretId,
-      SecretKey: secretKey,
-      Token: token,
+      region: region,
+      serviceType: ServiceType.faas,
+      secretId: secretId,
+      secretKey: secretKey,
+      token: token,
     });
 
     this.cls = new Cls({
@@ -94,7 +89,6 @@ export class FaaS {
    */
   setRegion(region: string): void {
     this.region = region;
-    this.capi.options.Region = region;
     this.cls.options.region = region;
   }
 
@@ -113,7 +107,7 @@ export class FaaS {
     Action: ActionType;
     [key: string]: any;
   }) {
-    const result = await APIS[Action](this.capi, pascalCaseProps(data));
+    const result = await APIS[Action](this.capi, data);
     return result;
   }
 

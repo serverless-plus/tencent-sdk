@@ -1,8 +1,5 @@
 import { Method } from 'got';
-export interface AnyObject {
-  [prop: string]: any;
-}
-
+import { KeyValueObject } from '@tencent-sdk/common';
 export interface ClsOptions {
   baseHost?: string; // base host
   region: string; // request region, default: ap-guangzhou
@@ -18,9 +15,9 @@ export interface RequestOptions {
   debug?: boolean; // whether enable log debug info
   path: string; // request path
   method: Method; // request method
-  query?: AnyObject;
-  data?: AnyObject;
-  headers?: AnyObject;
+  query?: KeyValueObject;
+  data?: KeyValueObject;
+  headers?: KeyValueObject;
   options?: ClsOptions;
 }
 

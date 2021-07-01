@@ -1,4 +1,4 @@
-import { ServiceType, ApiFactory } from '@tencent-sdk/common';
+import { ServiceType, ApiFactory } from '@tencent-sdk/capi';
 
 const ACTIONS = ['GetMonitorData'] as const;
 

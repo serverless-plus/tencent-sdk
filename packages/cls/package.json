@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/yugasun/tencent-sdk#readme",
   "dependencies": {
+    "@tencent-sdk/common": "^0.1.0",
     "got": "^11.8.0"
   }
 }

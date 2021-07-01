@@ -2,18 +2,18 @@ import { Capi } from '../src';
 
 describe('Capi', () => {
   const client = new Capi({
-    Region: 'ap-guangzhou',
-    SecretId: process.env.TENCENT_SECRET_ID,
-    SecretKey: process.env.TENCENT_SECRET_KEY,
-    Token: process.env.TENCENT_TOKEN,
-    ServiceType: 'scf',
-    Version: '2018-04-16',
+    region: 'ap-guangzhou',
+    secretId: process.env.TENCENT_SECRET_ID,
+    secretKey: process.env.TENCENT_SECRET_KEY,
+    token: process.env.TENCENT_TOKEN,
+    serviceType: 'scf',
+    version: '2018-04-16',
   });
 
   test('[v1] should get api result success', async () => {
     const res = await client.request(
       {
-        Action: 'ListFunctions',
+        action: 'ListFunctions',
       },
       {
         isV3: false,
@@ -33,7 +33,7 @@ describe('Capi', () => {
   test('[v3] should get api result success', async () => {
     const res = await client.request(
       {
-        Action: 'ListFunctions',
+        action: 'ListFunctions',
       },
       {
         isV3: true,

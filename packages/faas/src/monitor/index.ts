@@ -1,5 +1,5 @@
-import { Capi } from '@tencent-sdk/capi';
-import { ServiceType, pascalCaseProps } from '@tencent-sdk/common';
+import { Capi, ServiceType } from '@tencent-sdk/capi';
+import { pascalCaseProps } from '@tencent-sdk/common';
 import APIS, { ActionType } from './apis';
 import { dtz, formatDate } from '../dayjs';
 import {
@@ -52,11 +52,11 @@ export class Monitor {
     this.region = region;
     this.capi = new Capi({
       debug,
-      Region: region,
-      ServiceType: ServiceType.monitor,
-      SecretId: secretId,
-      SecretKey: secretKey,
-      Token: token,
+      region: region,
+      serviceType: ServiceType.monitor,
+      secretId: secretId,
+      secretKey: secretKey,
+      token: token,
     });
   }
 

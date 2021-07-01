@@ -1,5 +1,6 @@
 import got, { Options } from 'got';
-import { logger, tencentSign, querystring } from './utils';
+import { logger, querystring } from '@tencent-sdk/common';
+import { tencentSign } from './utils';
 import {
   ClsOptions,
   ApiResponse,

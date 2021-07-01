@@ -1,6 +1,6 @@
 {
   "name": "@tencent-sdk/capi",
-  "version": "1.1.8",
+  "version": "2.0.0",
   "description": "Tencent cloud api sdk",
   "main": "dist/index.js",
   "node": "dist/index.js",
@@ -22,7 +22,7 @@
   "author": "yugasun",
   "license": "MIT",
   "dependencies": {
-    "@tencent-sdk/common": "^0.1.0",
+    "@tencent-sdk/common": "1.0.0",
     "got": "^11.8.2"
   },
   "directories": {

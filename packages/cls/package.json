@@ -1,6 +1,6 @@
 {
   "name": "@tencent-sdk/cls",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "Tencent cloud cls sdk",
   "main": "dist/index.js",
   "node": "dist/index.js",
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/yugasun/tencent-sdk#readme",
   "dependencies": {
-    "@tencent-sdk/common": "^0.1.0",
+    "@tencent-sdk/common": "1.0.0",
     "got": "^11.8.0"
   }
 }

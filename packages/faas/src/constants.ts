@@ -1,4 +1,8 @@
 const ERRORS = {
+  OTHER_GET_FAAS_ERROR: {
+    type: 'API_FAAS_get',
+    code: `1000`,
+  },
   GET_FAAS_ERROR: {
     type: 'API_FAAS_get',
     code: `1001`,
@@ -18,6 +22,17 @@ const ERRORS = {
     type: 'API_FAAS_getTriggers',
     code: `1004`,
     message: `[FAAS] WEB 类型函数必须配置 API 网关触发器才能执行`,
+  },
+  NAMESPACE_NOT_EXIST_ERROR: {
+    type: 'API_FAAS_namespace',
+    code: `1005`,
+    message: '[FAAS] 未找到指定的 namespace，请创建后再试',
+  },
+
+  QUALIFIER_NOT_EXIST_ERROR: {
+    type: 'API_FAAS_qualifier',
+    code: `1006`,
+    message: '[FAAS] 未找到指定的 qualifier',
   },
 };
 

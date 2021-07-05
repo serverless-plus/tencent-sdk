@@ -199,10 +199,13 @@ const res = await faas.getLogByReqId({
 
 | 类型                   | 错误码 | 描述                     |
 | ---------------------- | ------ | ------------------------ |
-| API_FAAS_get           | 1001   | Can not get SCF          |
-| API_FAAS_getClsConfig  | 1002   | Can not get CLS config   |
-| API_FAAS_getLogByReqId | 1003   | Invalid Request ID       |
-| API_FAAS_getTriggers   | 1004   | Can not get SCF Triggers |
+| API_FAAS_get           | 1000   | 查找函数其他错误信息     |
+| API_FAAS_get           | 1001   | 无法找到制定函数         |
+| API_FAAS_getClsConfig  | 1002   | 无法获取函数的 CLS 配置  |
+| API_FAAS_getLogByReqId | 1003   | 无效的请求 ID            |
+| API_FAAS_getTriggers   | 1004   | 无法获取函数的触发器列表 |
+| API_FAAS_getNamespace  | 1005   | 未找到制定的 namespace   |
+| API_FAAS_getQualifier  | 1006   | 未找到指定的 qualifier   |
 
 ## License
 

@@ -18,6 +18,13 @@ export interface FaasBaseConfig {
   qualifier?: string;
 }
 
+export interface GetVersionsOptions extends FaasBaseConfig {
+  limit?: number;
+  page?: number;
+  order?: string;
+  orderBy?: string;
+}
+
 export interface Credentials {
   // secret id
   secretId: string;

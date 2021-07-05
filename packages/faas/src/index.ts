@@ -12,6 +12,7 @@ import {
   FaasBaseConfig,
   FunctionInfo,
   GetFaasOptions,
+  GetVersionsOptions,
   GetLogOptions,
   GetLogDetailOptions,
   ClsConfig,
@@ -137,6 +138,62 @@ export class FaaS {
   }
 
   /**
+   * 获取 faas 命名空间列表
+   */
+  async getNamespaces(options: { page?: number; limit?: number } = {}) {
+    const { page = 0, limit = 20 } = options;
+    let { Namespaces = [] } = await this.request({
+      Action: 'ListNamespaces',
+      Offset: page * limit,
+      Limit: limit,
+    });
+    if (Namespaces.length >= limit) {
+      const res = await this.getNamespaces({
+        page: page + 1,
+        limit,
+      });
+      Namespaces = Namespaces.concat(res);
+    }
+    return Namespaces.map((item: { Name: string }) => item.Name);
+  }
+
+  /**
+   * 获取 faas 版本列表
+   * @param {getVersionsOptions} options 参数
+   * @returns {Promise<string[]>} 函数版本列表，字符串数组
+   */
+  async getVersions({
+    name,
+    namespace = 'default',
+    page = 0,
+    limit = 20,
+    order = 'DESC',
+    orderBy = 'AddTime',
+  }: GetVersionsOptions) {
+    let { FunctionVersion = [] } = await this.request({
+      Action: 'ListVersionByFunction',
+      Namespace: namespace,
+      FunctionName: name,
+      Offset: page * limit,
+      Limit: limit,
+      Order: order,
+      OrderBy: orderBy,
+    });
+    if (FunctionVersion.length >= limit) {
+      const res = await this.getVersions({
+        name,
+        namespace,
+        page: page + 1,
+        limit,
+        order,
+        orderBy,
+      });
+      FunctionVersion = FunctionVersion.concat(res);
+    }
+    return FunctionVersion;
+  }
+
+  /**
    *  获取 faas 详情
    * @param {GetFaasOptions} options 参数
    * @returns {Promise<FunctionInfo | null>} 函数详情，如果不存在则返回 null
@@ -148,6 +205,21 @@ export class FaaS {
     showCode = false,
     showTriggers = false,
   }: GetFaasOptions): Promise<FunctionInfo | null> {
+    // 判断 namespace 是否存在
+    const namespaces = await this.getNamespaces();
+    if (namespaces.indexOf(namespace) === -1) {
+      throw new CommonError(ERRORS.NAMESPACE_NOT_EXIST_ERROR);
+    }
+    // 非 $LATEST 版本，需要先查找对应的版本是否存在
+    if (qualifier !== '$LATEST') {
+      const versions = await this.getVersions({
+        name,
+        namespace,
+      });
+      if (versions.indexOf(qualifier) === -1) {
+        throw new CommonError(ERRORS.QUALIFIER_NOT_EXIST_ERROR);
+      }
+    }
     try {
       const Response = await this.request({
         Action: 'GetFunction',
@@ -159,18 +231,20 @@ export class FaaS {
       });
       return Response;
     } catch (e) {
+      if (e.code === 'ResourceNotFound.Namespace') {
+        throw new CommonError(ERRORS.NAMESPACE_NOT_EXIST_ERROR);
+      }
       if (
-        e.code == 'ResourceNotFound.FunctionName' ||
-        e.code == 'ResourceNotFound.Function'
+        e.code === 'ResourceNotFound.FunctionName' ||
+        e.code === 'ResourceNotFound.Function'
       ) {
         return null;
       }
+
+      // 除以上错误码的其他信息
       throw new CommonError({
-        type: 'API_FAAS_GetFunction',
-        message: e.message,
-        stack: e.stack,
-        reqId: e.reqId,
-        code: e.code,
+        ...ERRORS.OTHER_GET_FAAS_ERROR,
+        ...{ message: e.message, reqId: e.reqId },
       });
     }
   }

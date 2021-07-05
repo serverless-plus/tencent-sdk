@@ -16,6 +16,8 @@ const ACTIONS = [
   'GetAlias',
   'Invoke',
   'ListTriggers',
+  'ListNamespaces',
+  'ListVersionByFunction',
 ] as const;
 
 export type ActionType = typeof ACTIONS[number];

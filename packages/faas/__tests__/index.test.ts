@@ -17,7 +17,6 @@ describe('FaaS', () => {
     secretKey: process.env.TENCENT_SECRET_KEY,
     token: process.env.TENCENT_TOKEN,
     region,
-    debug: true,
   });
 
   test('getRegion', async () => {
@@ -33,6 +32,19 @@ describe('FaaS', () => {
 
     // 还原为 ap-guangzhou
     faas.setRegion(region);
+  });
+
+  test('getNamespaces', async () => {
+    const res = await faas.getNamespaces();
+    expect(Array.isArray(res)).toBe(true);
+  });
+
+  test('getVersions', async () => {
+    const res = await faas.getVersions({
+      ...faasConfig,
+    });
+
+    expect(Array.isArray(res)).toBe(true);
   });
 
   test('invoke', async () => {

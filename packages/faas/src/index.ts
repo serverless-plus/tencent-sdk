@@ -205,20 +205,31 @@ export class FaaS {
     showCode = false,
     showTriggers = false,
   }: GetFaasOptions): Promise<FunctionInfo | null> {
-    // 判断 namespace 是否存在
-    const namespaces = await this.getNamespaces();
-    if (namespaces.indexOf(namespace) === -1) {
-      throw new CommonError(ERRORS.NAMESPACE_NOT_EXIST_ERROR);
-    }
-    // 非 $LATEST 版本，需要先查找对应的版本是否存在
-    if (qualifier !== '$LATEST') {
-      const versions = await this.getVersions({
-        name,
-        namespace,
-      });
-      if (versions.indexOf(qualifier) === -1) {
-        throw new CommonError(ERRORS.QUALIFIER_NOT_EXIST_ERROR);
+    try {
+      // 判断 namespace 是否存在
+      const namespaces = await this.getNamespaces();
+      if (namespaces.indexOf(namespace) === -1) {
+        throw new CommonError(ERRORS.NAMESPACE_NOT_EXIST_ERROR);
       }
+      // 非 $LATEST 版本，需要先查找对应的版本是否存在
+      if (qualifier !== '$LATEST') {
+        const versions = await this.getVersions({
+          name,
+          namespace,
+        });
+        if (versions.indexOf(qualifier) === -1) {
+          throw new CommonError(ERRORS.QUALIFIER_NOT_EXIST_ERROR);
+        }
+      }
+    } catch (e) {
+      // 可能是其他参数导致的，比如 region 不存在，直接返回 null，排除函数不存在异常
+      if (
+        e.code !== ERRORS.NAMESPACE_NOT_EXIST_ERROR.code &&
+        e.code !== ERRORS.QUALIFIER_NOT_EXIST_ERROR.code
+      ) {
+        return null;
+      }
+      throw e;
     }
     try {
       const Response = await this.request({

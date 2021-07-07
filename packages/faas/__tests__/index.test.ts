@@ -63,6 +63,37 @@ describe('FaaS', () => {
       retMsg: expect.any(String),
     });
   });
+  test('invoke with wrong region', async () => {
+    try {
+      faas.setRegion('ap-test');
+      await faas.invoke({
+        ...faasConfig,
+      });
+    } catch (e) {
+      expect(e.code).toBe('1001');
+    }
+    faas.setRegion(region);
+  });
+  test('invoke with wrong namespace', async () => {
+    try {
+      await faas.invoke({
+        ...faasConfig,
+        namespace: 'not_exist_namespace',
+      });
+    } catch (e) {
+      expect(e.code).toBe('1005');
+    }
+  });
+  test('invoke with wrong qualifier', async () => {
+    try {
+      await faas.invoke({
+        ...faasConfig,
+        qualifier: 'not_exist_qualifier',
+      });
+    } catch (e) {
+      expect(e.code).toBe('1006');
+    }
+  });
 
   test('getClsConfig', async () => {
     const res = await faas.getClsConfig({

@@ -225,7 +225,7 @@ export class Cls {
       json: data || undefined,
     };
     if (query) {
-      reqOption.url = `https://${host}${path}?${querystring(query)}`;
+      reqOption.url = `https://${host}${path}?${querystring(query, true)}`;
     }
 
     if (options.token) {

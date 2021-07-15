@@ -7,6 +7,7 @@ export { tencentSign, tencentSignV1 } from './utils';
 export * from './factory';
 
 export interface CapiOptions {
+  isPascalCase?: boolean; // whether api parameter need use pascalCase to handler
   isV3?: boolean; // whether to use version3 sign method
   debug?: boolean; // whether enable log debug info
   host?: string; // request host
@@ -65,6 +66,7 @@ export class Capi implements CapiInstance {
     secretKey: '',
     region: 'ap-guangzhou',
     signatureMethod: 'sha1', // sign algorithm, default is sha1
+    isPascalCase: true,
   };
 
   constructor(options: CapiOptions) {
@@ -88,7 +90,7 @@ export class Capi implements CapiInstance {
     };
     if (isV3 || opts.isV3) {
       const { url, payload, authorization, timestamp, host } = tencentSign(
-        pascalCaseProps(restData),
+        this.options.isPascalCase ? pascalCaseProps(restData) : restData,
         options,
       );
       reqOption = {
@@ -112,7 +114,7 @@ export class Capi implements CapiInstance {
       }
     } else {
       const { url, method, payload } = tencentSignV1(
-        pascalCaseProps(data),
+        this.options.isPascalCase ? pascalCaseProps(data) : data,
         options,
       );
       reqOption = {

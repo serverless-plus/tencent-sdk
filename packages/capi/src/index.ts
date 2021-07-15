@@ -81,7 +81,9 @@ export class Capi implements CapiInstance {
     const options = Object.assign(this.options, opts);
     options.requestClient =
       options.requestClient || data.requestClient || 'TENCENT_SDK_CAPI';
-    const { action, version, ...restData } = data;
+    let { action, Action, Version, version, ...restData } = data;
+    action = action || Action;
+    version = version || Version;
 
     let reqOption: Options = {
       url: '',
@@ -113,8 +115,12 @@ export class Capi implements CapiInstance {
         reqOption.headers!['X-TC-Token'] = this.options.token;
       }
     } else {
+      const reqData = {
+        ...restData,
+        Action: action,
+      };
       const { url, method, payload } = tencentSignV1(
-        this.options.isPascalCase ? pascalCaseProps(data) : data,
+        this.options.isPascalCase ? pascalCaseProps(reqData) : reqData,
         options,
       );
       reqOption = {

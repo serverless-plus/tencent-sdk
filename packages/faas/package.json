@@ -1,6 +1,6 @@
 {
   "name": "@tencent-sdk/faas",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Tencent cloud faas sdk",
   "main": "dist/index.js",
   "node": "dist/index.js",
@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/yugasun/tencent-sdk#readme",
   "dependencies": {
-    "@tencent-sdk/capi": "2.0.2",
+    "@tencent-sdk/capi": "2.0.3",
     "@tencent-sdk/cls": "1.0.1",
     "@tencent-sdk/common": "1.0.0",
     "dayjs": "^1.10.4",

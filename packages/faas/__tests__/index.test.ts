@@ -1,4 +1,4 @@
-import { FaaS } from '../src';
+import { FaaS, InvokeResult } from '../src';
 
 describe('FaaS', () => {
   const region = 'ap-guangzhou';
@@ -13,6 +13,7 @@ describe('FaaS', () => {
   };
   let reqId = '';
   const faas = new FaaS({
+    debug: !!process.env.DEBUG,
     secretId: process.env.TENCENT_SECRET_ID,
     secretKey: process.env.TENCENT_SECRET_KEY,
     token: process.env.TENCENT_TOKEN,
@@ -48,9 +49,9 @@ describe('FaaS', () => {
   });
 
   test('invoke', async () => {
-    const res = await faas.invoke({
+    const res = (await faas.invoke({
       ...faasConfig,
-    });
+    })) as InvokeResult;
 
     expect(res).toEqual({
       billDuration: expect.any(Number),
@@ -62,6 +63,8 @@ describe('FaaS', () => {
       log: expect.any(String),
       retMsg: expect.any(String),
     });
+
+    reqId = res.functionRequestId;
   });
   test('invoke with wrong region', async () => {
     try {
@@ -114,30 +117,30 @@ describe('FaaS', () => {
     expect(res).toBeInstanceOf(Array);
   });
 
-  if (reqId) {
-    test('getLogDetail', async () => {
-      const res = await faas.getLogDetail({
-        ...faasConfig,
-        ...clsConfig,
-        reqId,
-      });
-      expect(res).toBeInstanceOf(Array);
+  test('getLogDetail', async () => {
+    const res = await faas.getLogDetail({
+      ...faasConfig,
+      ...clsConfig,
+      reqId,
     });
-    test('getLogByReqId', async () => {
-      const res = await faas.getLogByReqId({
-        ...faasConfig,
-        reqId,
-      });
-      expect(res).toEqual({
-        requestId: reqId,
-        retryNum: 0,
-        startTime: expect.any(String),
-        memoryUsage: expect.any(String),
-        duration: expect.any(String),
-        message: expect.any(String),
-      });
+    expect(res).toBeInstanceOf(Array);
+  });
+  test('getLogByReqId', async () => {
+    const res = await faas.getLogByReqId({
+      ...faasConfig,
+      reqId,
     });
-  }
+
+    expect(res).toEqual({
+      requestId: reqId,
+      retryNum: 0,
+      startTime: expect.any(String),
+      memoryUsage: expect.any(String),
+      duration: expect.any(String),
+      message: expect.any(String),
+      isCompleted: expect.any(Boolean),
+    });
+  });
 
   test('getMetric', async () => {
     const res = await faas.getMetric({

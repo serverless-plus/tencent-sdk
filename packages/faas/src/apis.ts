@@ -1,4 +1,4 @@
-import { ServiceType, ApiFactory } from '@tencent-sdk/capi';
+import { Capi, ServiceType, ApiFactory } from '@tencent-sdk/capi';
 
 const ACTIONS = [
   'CreateFunction',
@@ -22,11 +22,22 @@ const ACTIONS = [
 
 export type ActionType = typeof ACTIONS[number];
 
-const APIS = ApiFactory({
-  isV3: true,
-  serviceType: ServiceType.faas,
-  version: '2018-04-16',
-  actions: ACTIONS,
-});
+export type ApiMap = Record<ActionType, (capi: Capi, inputs: any) => any>;
 
-export default APIS;
+function initializeApis({
+  isV3 = true,
+  debug = false,
+}: {
+  isV3?: boolean;
+  debug?: boolean;
+}): ApiMap {
+  return ApiFactory({
+    isV3,
+    debug,
+    serviceType: ServiceType.faas,
+    version: '2018-04-16',
+    actions: ACTIONS,
+  });
+}
+
+export { initializeApis };

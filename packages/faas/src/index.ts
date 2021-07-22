@@ -3,8 +3,8 @@ import { camelCaseProps } from '@tencent-sdk/common';
 import { Capi, ServiceType, CommonError } from '@tencent-sdk/capi';
 import { Cls } from '@tencent-sdk/cls';
 import { dtz, dayjs, formatDate, Dayjs, TIME_FORMAT } from './dayjs';
-import APIS, { ActionType } from './apis';
-import { getSearchSql } from './utils';
+import { initializeApis, ApiMap, ActionType } from './apis';
+import { getSearchSql, formatFaasLog } from './utils';
 import { Monitor } from './monitor';
 import {
   Credentials,
@@ -16,7 +16,6 @@ import {
   GetLogOptions,
   GetLogDetailOptions,
   ClsConfig,
-  LogContent,
   SearchLogItem,
   SearchLogDetailItem,
   InvokeOptions,
@@ -37,9 +36,11 @@ export * from './monitor';
 export class FaaS {
   credentials: Credentials;
   region: string;
+  debug: boolean;
   capi: Capi;
   cls: Cls;
   monitor: Monitor;
+  apis: ApiMap;
   clsConfigCache: { [prop: string]: { logsetId: string; topicId: string } };
 
   constructor({
@@ -54,6 +55,7 @@ export class FaaS {
       secretKey,
       token,
     };
+    this.debug = debug;
     this.region = region;
     this.capi = new Capi({
       debug,
@@ -82,6 +84,10 @@ export class FaaS {
 
     // 函数 CLS 配置缓存
     this.clsConfigCache = {};
+
+    this.apis = initializeApis({
+      debug,
+    });
   }
 
   /**
@@ -108,7 +114,7 @@ export class FaaS {
     Action: ActionType;
     [key: string]: any;
   }) {
-    const result = await APIS[Action](this.capi, data);
+    const result = await this.apis[Action](this.capi, data);
     return result;
   }
 
@@ -154,7 +160,8 @@ export class FaaS {
       });
       Namespaces = Namespaces.concat(res);
     }
-    return Namespaces.map((item: { Name: string }) => item.Name);
+
+    return Namespaces;
   }
 
   /**
@@ -207,7 +214,10 @@ export class FaaS {
   }: GetFaasOptions): Promise<FunctionInfo | null> {
     try {
       // 判断 namespace 是否存在
-      const namespaces = await this.getNamespaces();
+      const namespacesList = await this.getNamespaces();
+      const namespaces = namespacesList.map(
+        (item: { Name: string }) => item.Name,
+      );
       if (namespaces.indexOf(namespace) === -1) {
         throw new CommonError(ERRORS.NAMESPACE_NOT_EXIST_ERROR);
       }
@@ -425,6 +435,7 @@ export class FaaS {
     const logs = [];
     for (let i = 0, len = results.length; i < len; i++) {
       const curReq = results[i];
+      curReq.isCompleted = false;
       curReq.startTime = formatDate(curReq.startTime);
 
       const detailLog = await this.getLogDetail({
@@ -434,20 +445,12 @@ export class FaaS {
         startTime: startDate.format(TIME_FORMAT),
         endTime: endDate.format(TIME_FORMAT),
       });
-      curReq.message = (detailLog || [])
-        .map(({ content }: { content: string }) => {
-          try {
-            const info = JSON.parse(content) as LogContent;
-            if (info.SCF_Type === 'Custom') {
-              curReq.memoryUsage = info.SCF_MemUsage;
-              curReq.duration = info.SCF_Duration;
-            }
-            return info.SCF_Message;
-          } catch (e) {
-            return '';
-          }
-        })
-        .join('');
+      const formatedInfo = formatFaasLog(detailLog || []);
+      curReq.message = formatedInfo.message;
+      curReq.memoryUsage = formatedInfo.memoryUsage;
+      curReq.isCompleted = formatedInfo.isCompleted;
+      curReq.duration = formatedInfo.duration;
+
       logs.push(curReq);
     }
     return logs;
@@ -513,7 +516,9 @@ export class FaaS {
     }
     const endDate = dayjs(endTime);
 
-    console.log(`[FAAS] 通过请求 ID 获取日志: ${reqId}`);
+    if (this.debug) {
+      console.log(`[FAAS] 通过请求 ID 获取日志: ${reqId}`);
+    }
 
     const detailLog = await this.getLogDetail({
       logsetId: logsetId,
@@ -529,22 +534,13 @@ export class FaaS {
       memoryUsage: '',
       duration: '',
       message: '',
+      isCompleted: false,
     };
-    curReq.message = (detailLog || [])
-      .map(({ content, timestamp }) => {
-        try {
-          const info = JSON.parse(content) as LogContent;
-          if (info.SCF_Type === 'Custom') {
-            curReq.memoryUsage = info.SCF_MemUsage;
-            curReq.duration = info.SCF_Duration;
-            curReq.startTime = timestamp;
-          }
-          return info.SCF_Message;
-        } catch (e) {
-          return '';
-        }
-      })
-      .join('');
+    const formatedInfo = formatFaasLog(detailLog || []);
+    curReq.message = formatedInfo.message;
+    curReq.memoryUsage = formatedInfo.memoryUsage;
+    curReq.isCompleted = formatedInfo.isCompleted;
+    curReq.duration = formatedInfo.duration;
 
     return curReq;
   }

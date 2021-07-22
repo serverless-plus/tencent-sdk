@@ -178,6 +178,7 @@ export interface SearchLogItem {
   memoryUsage: string;
   duration: string;
   message: string;
+  isCompleted: boolean;
 }
 
 // 查询得到的日志详情日志

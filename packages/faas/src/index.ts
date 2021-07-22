@@ -27,6 +27,9 @@ import {
   FormatedMonitorData,
   GetTriggersOptions,
   TriggerData,
+  GetAliasesOptions,
+  Version,
+  Alias,
 } from './typings';
 import { ERRORS } from './constants';
 
@@ -167,7 +170,7 @@ export class FaaS {
   /**
    * 获取 faas 版本列表
    * @param {getVersionsOptions} options 参数
-   * @returns {Promise<string[]>} 函数版本列表，字符串数组
+   * @returns {Promise<Version[]>} 函数版本列表，字符串数组
    */
   async getVersions({
     name,
@@ -176,8 +179,8 @@ export class FaaS {
     limit = 20,
     order = 'DESC',
     orderBy = 'AddTime',
-  }: GetVersionsOptions) {
-    let { FunctionVersion = [] } = await this.request({
+  }: GetVersionsOptions): Promise<Version[]> {
+    let { Versions = [] } = await this.request({
       Action: 'ListVersionByFunction',
       Namespace: namespace,
       FunctionName: name,
@@ -186,7 +189,7 @@ export class FaaS {
       Order: order,
       OrderBy: orderBy,
     });
-    if (FunctionVersion.length >= limit) {
+    if (Versions.length >= limit) {
       const res = await this.getVersions({
         name,
         namespace,
@@ -195,9 +198,77 @@ export class FaaS {
         order,
         orderBy,
       });
-      FunctionVersion = FunctionVersion.concat(res);
+      Versions = Versions.concat(res);
     }
-    return FunctionVersion;
+    return Versions;
+  }
+
+  /**
+   * 获取 faas 别名列表
+   * @param {GetAliasesOptions} options 参数
+   * @returns {Promise<Alias[]>} 函数版本列表，字符串数组
+   */
+  async getAliases({
+    name,
+    namespace = 'default',
+    page = 0,
+    limit = 20,
+  }: GetAliasesOptions): Promise<Alias[]> {
+    let { Aliases = [] } = await this.request({
+      Action: 'ListAliases',
+      Namespace: namespace,
+      FunctionName: name,
+      // FIXME: 云 API 定义 Offset 和 Limit 必须是 string 类型
+      Offset: `${page * limit}`,
+      Limit: `${limit}`,
+    });
+
+    if (Aliases.length >= limit) {
+      const res = await this.getAliases({
+        name,
+        namespace,
+        page: page + 1,
+        limit,
+      });
+      Aliases = Aliases.concat(res);
+    }
+    return Aliases;
+  }
+
+  async isVersionExist({
+    name,
+    namespace = 'default',
+    version,
+  }: {
+    version: string;
+    name: string;
+    namespace?: string;
+  }) {
+    const versionList = await this.getVersions({
+      name,
+      namespace,
+    });
+    const versions = versionList.map((item) => item.Version);
+
+    return versions.indexOf(version) > -1;
+  }
+
+  async isAliasExist({
+    name,
+    namespace = 'default',
+    alias,
+  }: {
+    alias: string;
+    name: string;
+    namespace?: string;
+  }) {
+    const aliasList = await this.getAliases({
+      name,
+      namespace,
+    });
+    const aliases = aliasList.map((item) => item.Name);
+
+    return aliases.indexOf(alias) > -1;
   }
 
   /**
@@ -221,13 +292,20 @@ export class FaaS {
       if (namespaces.indexOf(namespace) === -1) {
         throw new CommonError(ERRORS.NAMESPACE_NOT_EXIST_ERROR);
       }
-      // 非 $LATEST 版本，需要先查找对应的版本是否存在
-      if (qualifier !== '$LATEST') {
-        const versions = await this.getVersions({
+      const versionExist = await this.isVersionExist({
+        name,
+        namespace,
+        version: qualifier,
+      });
+
+      if (!versionExist) {
+        const aliasExist = await this.isAliasExist({
           name,
           namespace,
+          alias: qualifier,
         });
-        if (versions.indexOf(qualifier) === -1) {
+
+        if (!aliasExist) {
           throw new CommonError(ERRORS.QUALIFIER_NOT_EXIST_ERROR);
         }
       }

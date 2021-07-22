@@ -32,7 +32,7 @@ const ERRORS = {
   QUALIFIER_NOT_EXIST_ERROR: {
     type: 'API_FAAS_qualifier',
     code: `1006`,
-    message: '[FAAS] 未找到指定的 qualifier',
+    message: '[FAAS] 未找到指定的 qualifier (版本或者别名)',
   },
 };
 

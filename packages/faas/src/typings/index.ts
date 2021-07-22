@@ -25,6 +25,13 @@ export interface GetVersionsOptions extends FaasBaseConfig {
   orderBy?: string;
 }
 
+export interface GetAliasesOptions extends FaasBaseConfig {
+  limit?: number;
+  page?: number;
+  order?: string;
+  orderBy?: string;
+}
+
 export interface Credentials {
   // secret id
   secretId: string;
@@ -290,4 +297,24 @@ export interface TriggerData {
   TriggerDesc?: string;
   TriggerName?: string;
   Qualifier?: string;
+}
+
+export interface Alias {
+  Name: string;
+  Description: string;
+  FunctionVersion: string;
+  RoutingConfig: {
+    AdditionalVersionWeights: any[];
+    AddtionVersionMatchs: any[];
+  };
+  AddTime: string;
+  ModTime: string;
+}
+
+export interface Version {
+  Version: string;
+  Description: string;
+  AddTime: string;
+  ModTime: string;
+  Status: string;
 }

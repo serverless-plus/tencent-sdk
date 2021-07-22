@@ -18,6 +18,7 @@ const ACTIONS = [
   'ListTriggers',
   'ListNamespaces',
   'ListVersionByFunction',
+  'ListAliases',
 ] as const;
 
 export type ActionType = typeof ACTIONS[number];
@@ -37,6 +38,9 @@ function initializeApis({
     serviceType: ServiceType.faas,
     version: '2018-04-16',
     actions: ACTIONS,
+    errorHandler: (e) => {
+      console.log(e);
+    },
   });
 }
 

@@ -132,7 +132,7 @@ export function ApiFactory<ACTIONS_T extends readonly string[]>({
           return customHandler(action, res);
         }
         const { Response } = res;
-        if (Response && Response.Error && Response.Error.Code) {
+        if (Response?.Error?.Code) {
           if (errorHandler) {
             return errorHandler(action, Response);
           }

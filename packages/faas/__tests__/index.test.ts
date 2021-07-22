@@ -20,168 +20,206 @@ describe('FaaS', () => {
     region,
   });
 
-  test('getRegion', async () => {
-    const region = faas.getRegion();
+  describe('base methods', () => {
+    test('getRegion', async () => {
+      const region = faas.getRegion();
 
-    expect(region).toBe(region);
-  });
-
-  test('setRegion', async () => {
-    faas.setRegion('ap-shanghai');
-
-    expect(faas.getRegion()).toBe('ap-shanghai');
-
-    // 还原为 ap-guangzhou
-    faas.setRegion(region);
-  });
-
-  test('getNamespaces', async () => {
-    const res = await faas.getNamespaces();
-    expect(Array.isArray(res)).toBe(true);
-  });
-
-  test('getVersions', async () => {
-    const res = await faas.getVersions({
-      ...faasConfig,
+      expect(region).toBe(region);
     });
 
-    expect(Array.isArray(res)).toBe(true);
-  });
+    test('setRegion', async () => {
+      faas.setRegion('ap-shanghai');
 
-  test('invoke', async () => {
-    const res = (await faas.invoke({
-      ...faasConfig,
-    })) as InvokeResult;
+      expect(faas.getRegion()).toBe('ap-shanghai');
 
-    expect(res).toEqual({
-      billDuration: expect.any(Number),
-      duration: expect.any(Number),
-      errMsg: expect.any(String),
-      memUsage: expect.any(Number),
-      functionRequestId: expect.any(String),
-      invokeResult: expect.any(Number),
-      log: expect.any(String),
-      retMsg: expect.any(String),
+      // 还原为 ap-guangzhou
+      faas.setRegion(region);
     });
 
-    reqId = res.functionRequestId;
-  });
-  test('invoke with wrong region', async () => {
-    try {
-      faas.setRegion('ap-test');
-      await faas.invoke({
+    test('getNamespaces', async () => {
+      const res = await faas.getNamespaces();
+      expect(Array.isArray(res)).toBe(true);
+    });
+
+    test('getVersions', async () => {
+      const res = await faas.getVersions({
         ...faasConfig,
       });
-    } catch (e) {
-      expect(e.code).toBe('1001');
-    }
-    faas.setRegion(region);
+
+      expect(Array.isArray(res)).toBe(true);
+    });
   });
-  test('invoke with wrong namespace', async () => {
-    try {
-      await faas.invoke({
+
+  describe('invoke', () => {
+    test('invoke', async () => {
+      const res = (await faas.invoke({
         ...faasConfig,
-        namespace: 'not_exist_namespace',
+      })) as InvokeResult;
+
+      expect(res).toEqual({
+        billDuration: expect.any(Number),
+        duration: expect.any(Number),
+        errMsg: expect.any(String),
+        memUsage: expect.any(Number),
+        functionRequestId: expect.any(String),
+        invokeResult: expect.any(Number),
+        log: expect.any(String),
+        retMsg: expect.any(String),
       });
-    } catch (e) {
-      expect(e.code).toBe('1005');
-    }
-  });
-  test('invoke with wrong qualifier', async () => {
-    try {
-      await faas.invoke({
+
+      reqId = res.functionRequestId;
+    });
+
+    test('invoke with qualifier $DEFAULT', async () => {
+      const res = (await faas.invoke({
         ...faasConfig,
-        qualifier: 'not_exist_qualifier',
+        qualifier: '$DEFAULT',
+      })) as InvokeResult;
+
+      expect(res).toEqual({
+        billDuration: expect.any(Number),
+        duration: expect.any(Number),
+        errMsg: expect.any(String),
+        memUsage: expect.any(Number),
+        functionRequestId: expect.any(String),
+        invokeResult: expect.any(Number),
+        log: expect.any(String),
+        retMsg: expect.any(String),
       });
-    } catch (e) {
-      expect(e.code).toBe('1006');
-    }
-  });
-
-  test('getClsConfig', async () => {
-    const res = await faas.getClsConfig({
-      ...faasConfig,
     });
 
-    expect(res).toEqual(clsConfig);
-  });
-
-  test('getLogList', async () => {
-    const res = await faas.getLogList({
-      ...faasConfig,
+    test('invoke with wrong qualifier', async () => {
+      try {
+        await faas.invoke({
+          ...faasConfig,
+          qualifier: 'wrong_qualifier',
+        });
+      } catch (e) {
+        expect(e.code).toBe('1006');
+      }
     });
 
-    if (res[0]) {
-      reqId = res[0]!.requestId;
-    }
-    expect(res).toBeInstanceOf(Array);
-  });
-
-  test('getLogDetail', async () => {
-    const res = await faas.getLogDetail({
-      ...faasConfig,
-      ...clsConfig,
-      reqId,
+    test('invoke with wrong region', async () => {
+      try {
+        faas.setRegion('ap-test');
+        await faas.invoke({
+          ...faasConfig,
+        });
+      } catch (e) {
+        expect(e.code).toBe('1001');
+      }
+      faas.setRegion(region);
     });
-    expect(res).toBeInstanceOf(Array);
-  });
-  test('getLogByReqId', async () => {
-    const res = await faas.getLogByReqId({
-      ...faasConfig,
-      reqId,
+    test('invoke with wrong namespace', async () => {
+      try {
+        await faas.invoke({
+          ...faasConfig,
+          namespace: 'not_exist_namespace',
+        });
+      } catch (e) {
+        expect(e.code).toBe('1005');
+      }
     });
-
-    expect(res).toEqual({
-      requestId: reqId,
-      retryNum: 0,
-      startTime: expect.any(String),
-      memoryUsage: expect.any(String),
-      duration: expect.any(String),
-      message: expect.any(String),
-      isCompleted: expect.any(Boolean),
+    test('invoke with wrong qualifier', async () => {
+      try {
+        await faas.invoke({
+          ...faasConfig,
+          qualifier: 'not_exist_qualifier',
+        });
+      } catch (e) {
+        expect(e.code).toBe('1006');
+      }
     });
   });
 
-  test('getMetric', async () => {
-    const res = await faas.getMetric({
-      ...faasConfig,
-      metric: 'Invocation',
-      isRaw: false,
+  describe('log', () => {
+    test('getClsConfig', async () => {
+      const res = await faas.getClsConfig({
+        ...faasConfig,
+      });
+
+      expect(res).toEqual(clsConfig);
     });
-    expect(res).toBeInstanceOf(Array);
-    if (res.length > 0) {
-      expect(res).toEqual(
-        expect.arrayContaining([
+
+    test('getLogList', async () => {
+      const res = await faas.getLogList({
+        ...faasConfig,
+      });
+
+      if (res[0]) {
+        reqId = res[0]!.requestId;
+      }
+      expect(res).toBeInstanceOf(Array);
+    });
+
+    test('getLogDetail', async () => {
+      const res = await faas.getLogDetail({
+        ...faasConfig,
+        ...clsConfig,
+        reqId,
+      });
+      expect(res).toBeInstanceOf(Array);
+    });
+    test('getLogByReqId', async () => {
+      const res = await faas.getLogByReqId({
+        ...faasConfig,
+        reqId,
+      });
+
+      expect(res).toEqual({
+        requestId: reqId,
+        retryNum: 0,
+        startTime: expect.any(String),
+        memoryUsage: expect.any(String),
+        duration: expect.any(String),
+        message: expect.any(String),
+        isCompleted: expect.any(Boolean),
+      });
+    });
+  });
+
+  describe('metric', () => {
+    test('getMetric', async () => {
+      const res = await faas.getMetric({
+        ...faasConfig,
+        metric: 'Invocation',
+        isRaw: false,
+      });
+      expect(res).toBeInstanceOf(Array);
+      if (res.length > 0) {
+        expect(res).toEqual(
+          expect.arrayContaining([
+            {
+              time: expect.any(String),
+              value: expect.any(Number),
+              timestamp: expect.any(Number),
+            },
+          ]),
+        );
+      }
+    });
+
+    test('[isRaw = true] getMetric', async () => {
+      const res = await faas.getMetric({
+        ...faasConfig,
+        metric: 'Invocation',
+        isRaw: true,
+      });
+
+      expect(res).toEqual({
+        StartTime: expect.any(String),
+        EndTime: expect.any(String),
+        MetricName: expect.any(String),
+        Period: expect.any(Number),
+        DataPoints: expect.arrayContaining([
           {
-            time: expect.any(String),
-            value: expect.any(Number),
-            timestamp: expect.any(Number),
+            Dimensions: expect.any(Array),
+            Timestamps: expect.any(Array),
+            Values: expect.any(Array),
           },
         ]),
-      );
-    }
-  });
-
-  test('[isRaw = true] getMetric', async () => {
-    const res = await faas.getMetric({
-      ...faasConfig,
-      metric: 'Invocation',
-      isRaw: true,
-    });
-
-    expect(res).toEqual({
-      StartTime: expect.any(String),
-      EndTime: expect.any(String),
-      MetricName: expect.any(String),
-      Period: expect.any(Number),
-      DataPoints: expect.arrayContaining([
-        {
-          Dimensions: expect.any(Array),
-          Timestamps: expect.any(Array),
-          Values: expect.any(Array),
-        },
-      ]),
-      RequestId: expect.stringMatching(/.{36}/g),
+        RequestId: expect.stringMatching(/.{36}/g),
+      });
     });
   });
 });

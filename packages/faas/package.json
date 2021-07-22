@@ -1,6 +1,6 @@
 {
   "name": "@tencent-sdk/faas",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Tencent cloud faas sdk",
   "main": "dist/index.js",
   "node": "dist/index.js",

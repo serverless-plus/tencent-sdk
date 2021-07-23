@@ -146,6 +146,15 @@ describe('FaaS', () => {
         ...faasConfig,
       });
 
+      expect(res).toBeInstanceOf(Array);
+    });
+
+    test('getLogList isFilterCompleted = true', async () => {
+      const res = await faas.getLogList({
+        ...faasConfig,
+        isFilterCompleted: true,
+      });
+
       if (res[0]) {
         reqId = res[0]!.requestId;
       }

@@ -127,6 +127,8 @@ export interface GetLogOptions {
   interval?: number;
   // 获取条数
   limit?: number;
+  // 是否过滤掉不完整的日志，默认不过滤，设置为 true 可以过滤，只返回完整的日志
+  isFilterCompleted?: boolean;
 }
 
 export interface ClsConfig {

@@ -465,6 +465,7 @@ export class FaaS {
     interval = 600,
     limit = 10,
     startTime,
+    isFilterCompleted = false,
   }: GetLogOptions): Promise<SearchLogItem[]> {
     const { logsetId, topicId } = await this.getClsConfig({
       name,
@@ -531,7 +532,7 @@ export class FaaS {
 
       logs.push(curReq);
     }
-    return logs;
+    return isFilterCompleted ? logs.filter((item) => item.isCompleted) : logs;
   }
 
   /**

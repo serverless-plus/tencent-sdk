@@ -133,19 +133,22 @@ const res = await faas.getLogList({
 
 > 注意：时间必须是 UTC+8 （亚洲/上海时区）时间。
 
+由于云函数是流失日志，日志落盘到 CLS 是有时间延迟的，所以在实时获取日志是会存在最新的部分日志信息并不完整，如果需要过滤掉这些不完整的日志，可以通过传递参数 `isFilterCompleted` 为 `true` 来实现。
+
 参数说明：
 
-| 参数      | 描述                               |       类型       | 必须 | 默认         |
-| --------- | ---------------------------------- | :--------------: | :--: | ------------ |
-| name      | 函数名称                           |      string      |  是  |              |
-| namespace | 命名空间                           |      string      |  否  | `default`    |
-| qualifier | 函数版本                           |      string      |  否  | `$LATEST`    |
-| startTime | 开始时间，支持格式化的时间和时间戳 | `string\|number` |  否  |              |
-| endTime   | 结束时间，支持格式化的时间和时间戳 | `string\|number` |  否  | `Date.now()` |
-| reqId     | 请求 ID                            |      string      |  否  |              |
-| status    | 日志状态                           |      string      |  否  |              |
-| interval  | 时间间隔，单位秒                   |      string      |  否  | `600s`       |
-| limit     | 获取条数                           |      string      |  否  |              |
+| 参数              | 描述                               |       类型       | 必须 | 默认         |
+| ----------------- | ---------------------------------- | :--------------: | :--: | ------------ |
+| name              | 函数名称                           |      string      |  是  |              |
+| namespace         | 命名空间                           |      string      |  否  | `default`    |
+| qualifier         | 函数版本                           |      string      |  否  | `$LATEST`    |
+| startTime         | 开始时间，支持格式化的时间和时间戳 | `string\|number` |  否  |              |
+| endTime           | 结束时间，支持格式化的时间和时间戳 | `string\|number` |  否  | `Date.now()` |
+| reqId             | 请求 ID                            |      string      |  否  |              |
+| status            | 日志状态                           |      string      |  否  |              |
+| interval          | 时间间隔，单位秒                   |      string      |  否  | `600s`       |
+| limit             | 获取条数                           |      string      |  否  |              |
+| isFilterCompleted | 是否过滤掉不完整的日志             |     boolean      |  否  | `false`      |
 
 ### getLogDetail
 

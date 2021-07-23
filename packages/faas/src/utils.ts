@@ -42,29 +42,44 @@ export function getSearchSql(options: GetLogOptions) {
 }
 
 /**
- * 判断请求日志是否是完整的
+ * 判断是否包含字符串
+ * @param {string} msg - string
+ * @returns {boolean}
+ */
+export function isContain(msg: string, subStr: string) {
+  return msg.indexOf(subStr) > -1;
+}
+
+function hasStartMark(msg: string) {
+  return isContain(msg, 'START RequestId');
+}
+function hasEndMark(msg: string) {
+  return isContain(msg, 'END RequestId');
+}
+function hasReportMark(msg: string) {
+  return isContain(msg, 'Report RequestId');
+}
+
+/**
+ * 判断是否是完整的日志
  * @param {string} msg - log message
  * @returns {boolean}
  */
-export function isCompleteRequest(msg: string) {
-  return msg.indexOf('END RequestId') > -1;
+export function isCompleted(msg: string) {
+  return hasStartMark(msg) && hasEndMark(msg) && hasReportMark(msg);
 }
 
 export function formatFaasLog(detailLog: { content: string }[]) {
   let memoryUsage = '';
   let duration = '';
-  let isCompleted = false;
-  let message = (detailLog || [])
+
+  const message = (detailLog || [])
     .map(({ content }: { content: string }) => {
       try {
         const info = JSON.parse(content) as LogContent;
         if (info.SCF_Type === 'Custom') {
           memoryUsage = info.SCF_MemUsage;
           duration = info.SCF_Duration;
-        }
-        // 判断当前调用是否完成，如果完成则设置 isCompleted 为 true
-        if (!isCompleted) {
-          isCompleted = isCompleteRequest(info.SCF_Message);
         }
         return info.SCF_Message;
       } catch (e) {
@@ -75,7 +90,7 @@ export function formatFaasLog(detailLog: { content: string }[]) {
   return {
     memoryUsage,
     duration,
-    isCompleted,
     message,
+    isCompleted: isCompleted(message),
   };
 }

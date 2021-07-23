@@ -146,6 +146,10 @@ describe('FaaS', () => {
         ...faasConfig,
       });
 
+      if (res[0]) {
+        reqId = res[0]!.requestId;
+      }
+
       expect(res).toBeInstanceOf(Array);
     });
 
@@ -155,10 +159,9 @@ describe('FaaS', () => {
         isFilterCompleted: true,
       });
 
-      if (res[0]) {
-        reqId = res[0]!.requestId;
-      }
-      expect(res).toBeInstanceOf(Array);
+      const uncompletedLog = res.filter((item) => !item.isCompleted);
+
+      expect(uncompletedLog.length).toBe(0);
     });
 
     test('getLogDetail', async () => {
